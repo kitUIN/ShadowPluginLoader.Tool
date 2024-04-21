@@ -4,6 +4,7 @@
     <PropertyGroup>
         <ForceToolExe  Condition="$(ForceToolExe) == ''">false</ForceToolExe>
         <IsPluginLoaderMetaBuild  Condition="$(IsPluginLoaderMetaBuild) == ''">false</IsPluginLoaderMetaBuild>
+        <IsPlugin  Condition="$(IsPlugin) == ''">false</IsPlugin>
     </PropertyGroup>
     <PropertyGroup>
         <PluginToolTargetsFile Condition="$(PluginToolTargetsFile) == ''">$(ProjectDir)Tool.targets</PluginToolTargetsFile>
@@ -16,5 +17,10 @@
     <Target Name="ExportMetaData" AfterTargets="Build;ReBuild" 
             Condition="$(Configuration.Contains('Release')) and !Exists('$(PluginToolTargetsFile)') and $(IsPluginLoaderMetaBuild)">
         <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForceToolExe)" ConsoleToMSBuild="True" />
+    </Target>
+    <Target Name="ExportMetaData" BeforeTargets="Compile"
+            Condition="!Exists('$(PluginToolTargetsFile)') and $(IsPlugin) and !$(IsPluginLoaderMetaBuild)">
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)" ConsoleToMSBuild="True" />
+        <!--<Copy SourceFiles="$(ProjectDir)plugin.json" DestinationFiles="$(OutputDir)plugin.json" />-->
     </Target>
 </Project>

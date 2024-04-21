@@ -11,7 +11,7 @@ using ShadowPluginLoader.MetaAttributes;
 
 namespace ShadowPluginLoader.Tool
 {
-    internal class ExportMetaWindow:Window
+    internal class ExportMetaWindow: I18NWindow
     {
         #region Fields
         
@@ -46,15 +46,7 @@ namespace ShadowPluginLoader.Tool
         };
         private readonly Assembly _assembly;
 
-        public bool IsChinese
-        {
-            get => Program.IsCn;
-            set
-            {
-                Program.IsCn = value;
-                CheckText();
-            }
-        }
+
         #endregion
         
         public ExportMetaWindow(string dllPath)
@@ -195,7 +187,7 @@ namespace ShadowPluginLoader.Tool
             Content = _grid;
         }
 
-        private void CheckText()
+        private new void CheckText()
         {
             if (IsChinese)
             {

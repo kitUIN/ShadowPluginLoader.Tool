@@ -63,6 +63,7 @@ namespace ShadowPluginLoader.Tool
         }
         
         #endregion
+        
         private static void Main(string[] args)
         {
             var method = args[0];
@@ -101,7 +102,9 @@ namespace ShadowPluginLoader.Tool
             }
             else if (method == "1")
             {
-                
+                _projectPath = args[1];
+                var csproj = args[2];
+                ReadMetaWindow.Read(_projectPath,csproj);
             }
             
         }

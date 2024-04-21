@@ -8,7 +8,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
-    <Version>1.0.0.3</Version>
+    <Version>1.0.0.4</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Authors>kitUIN</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -19,9 +19,10 @@
     <Copyright>Copyright 2024</Copyright>
     <PackageTags>kitUIN;plugin-loader;plugin;extension;msbuild</PackageTags>
     <PackageOutputPath>.\NugetPackages</PackageOutputPath>
-<!--    <PackageReadmeFile>README.md</PackageReadmeFile>-->
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\README.md" Pack="True" PackagePath="\" />
     <None Include="Assets\build\**" Pack="True" PackagePath="build\" />
     <None Include="Tools.Config.props" Pack="True" PackagePath="build\" />
     <None Include="$(OutputPath)\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />

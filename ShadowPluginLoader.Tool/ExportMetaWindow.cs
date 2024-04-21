@@ -52,6 +52,7 @@ namespace ShadowPluginLoader.Tool
         public ExportMetaWindow(string dllPath)
         {
             Init();
+            CheckText();
             _assembly = Assembly.LoadFrom(dllPath);
             LoadTypes();
             _exportButton.Click += ExportButtonOnClick;

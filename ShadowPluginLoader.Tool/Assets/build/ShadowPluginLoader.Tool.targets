@@ -2,7 +2,8 @@
     <Import Project="$(ProjectDir)Tools.Config.props" Condition="Exists('$(ProjectDir)Tools.Config.props')"/>
     <Import Project="$(MSBuildThisFileDirectory)Tools.Config.props" Condition="!Exists('$(ProjectDir)Tools.Config.props')"/>
     <PropertyGroup>
-        <ForceToolExe  Condition="$(ForceToolExe) == ''">false</ForceToolExe>
+        <IMetaType>ShadowPluginLoader.WinUI.Interfaces.IPluginMetaData</IMetaType>
+        <ForcePluginLoaderTool  Condition="$(ForcePluginLoaderTool) == ''">false</ForcePluginLoaderTool>
         <IsPluginLoaderMetaBuild  Condition="$(IsPluginLoaderMetaBuild) == ''">false</IsPluginLoaderMetaBuild>
         <IsPlugin  Condition="$(IsPlugin) == ''">false</IsPlugin>
     </PropertyGroup>
@@ -14,13 +15,17 @@
     </PropertyGroup>
 
     <Import Project="$(PluginToolTargetsFile)" Condition="Exists('$(PluginToolTargetsFile)')"/>
-    <Target Name="ExportMetaData" AfterTargets="Build;ReBuild" 
+    <Target Name="ExportMetaData" AfterTargets="CoreBuild"
             Condition="$(Configuration.Contains('Release')) and !Exists('$(PluginToolTargetsFile)') and $(IsPluginLoaderMetaBuild)">
-        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForceToolExe)" ConsoleToMSBuild="True" />
+        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForcePluginLoaderTool)" ConsoleToMSBuild="True" />
     </Target>
-    <Target Name="ExportMetaData" BeforeTargets="Compile"
+    <Target Name="ReadMetaData" BeforeTargets="BuildGenerateSources"
             Condition="!Exists('$(PluginToolTargetsFile)') and $(IsPlugin) and !$(IsPluginLoaderMetaBuild)">
         <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)" ConsoleToMSBuild="True" />
         <!--<Copy SourceFiles="$(ProjectDir)plugin.json" DestinationFiles="$(OutputDir)plugin.json" />-->
+    </Target>
+    <Target Name="CopyConfig" BeforeTargets="CopyMetaDataDFile;ReadMetaData"
+            Condition="!Exists('$(ProjectDir)Tools.Config.props')">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)Tools.Config.props" DestinationFiles="$(ProjectDir)Tools.Config.props" />
     </Target>
 </Project>

@@ -66,6 +66,7 @@ namespace ShadowPluginLoader.Tool
         
         private static void Main(string[] args)
         {
+            IsCn = IsChinese();
             var method = args[0];
             if (method == "0")
             {
@@ -84,10 +85,8 @@ namespace ShadowPluginLoader.Tool
                 {
                     var thread = new Thread(() =>
                     {
-                        var window = new ExportMetaWindow(exportMetaFile)
-                        {
-                            IsChinese = IsChinese()
-                        };
+                        var window = new ExportMetaWindow(exportMetaFile);
+
 
                         window.Closed += (sender2, e2) =>
                             window.Dispatcher.InvokeShutdown();

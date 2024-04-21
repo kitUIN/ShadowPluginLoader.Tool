@@ -1,7 +1,7 @@
-﻿/ShadowPluginLoader.Tool/bin/
-/ShadowPluginLoader.Tool/NugetPackages/
-/ShadowPluginLoader.MetaAttributes/NugetPackages/
-/.vs/
-/.idea/
-/ShadowPluginLoader.Tool/obj/
-/ShadowPluginLoader.MetaAttributes/obj/
+﻿ShadowPluginLoader.Tool/bin/
+ShadowPluginLoader.Tool/NugetPackages/
+ShadowPluginLoader.MetaAttributes/NugetPackages/
+.vs/
+.idea/
+ShadowPluginLoader.Tool/obj/
+ShadowPluginLoader.MetaAttributes/obj/

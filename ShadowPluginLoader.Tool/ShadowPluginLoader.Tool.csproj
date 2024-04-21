@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <Version>1.0.0.3</Version>
+    <PackageId>ShadowPluginLoader.Tool</PackageId>
+    <Authors>kitUIN</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</RepositoryUrl>
+    <Description>✨ ShadowPluginLoader Build Tool✨</Description>
+    <Copyright>Copyright 2024</Copyright>
+    <PackageTags>kitUIN;plugin-loader;plugin;extension;msbuild</PackageTags>
+    <PackageOutputPath>.\NugetPackages</PackageOutputPath>
+<!--    <PackageReadmeFile>README.md</PackageReadmeFile>-->
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Assets\build\**" Pack="True" PackagePath="build\" />
+    <None Include="Tools.Config.props" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.0.3" />
+  </ItemGroup>
+
+</Project>

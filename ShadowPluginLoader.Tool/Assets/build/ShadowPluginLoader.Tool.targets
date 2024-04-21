@@ -1,0 +1,20 @@
+﻿<Project>
+    <Import Project="$(ProjectDir)Tools.Config.props" Condition="Exists('$(ProjectDir)Tools.Config.props')"/>
+    <Import Project="$(MSBuildThisFileDirectory)Tools.Config.props" Condition="!Exists('$(ProjectDir)Tools.Config.props')"/>
+    <PropertyGroup>
+        <ForceToolExe  Condition="$(ForceToolExe) == ''">false</ForceToolExe>
+        <IsPluginLoaderMetaBuild  Condition="$(IsPluginLoaderMetaBuild) == ''">false</IsPluginLoaderMetaBuild>
+    </PropertyGroup>
+    <PropertyGroup>
+        <PluginToolTargetsFile Condition="$(PluginToolTargetsFile) == ''">$(ProjectDir)Tool.targets</PluginToolTargetsFile>
+        <ToolExeFile>$(MSBuildThisFileDirectory)ShadowPluginLoader.Tool.dll</ToolExeFile>
+        <OutputDir>$(ProjectDir)$(OutputPath)</OutputDir>
+        <OutputFile>$(OutputDir)$(TargetName)$(TargetExt)</OutputFile>
+    </PropertyGroup>
+
+    <Import Project="$(PluginToolTargetsFile)" Condition="Exists('$(PluginToolTargetsFile)')"/>
+    <Target Name="ExportMetaData" AfterTargets="Build;ReBuild" 
+            Condition="$(Configuration.Contains('Release')) and !Exists('$(PluginToolTargetsFile)') and $(IsPluginLoaderMetaBuild)">
+        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForceToolExe)" ConsoleToMSBuild="True" />
+    </Target>
+</Project>

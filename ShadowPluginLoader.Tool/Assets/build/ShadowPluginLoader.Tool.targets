@@ -19,12 +19,12 @@
             Condition="$(Configuration.Contains('Release')) and !Exists('$(PluginToolTargetsFile)') and $(IsPluginLoaderMetaBuild)">
         <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForcePluginLoaderTool)" ConsoleToMSBuild="True" />
     </Target>
-    <Target Name="ReadMetaData" BeforeTargets="BuildGenerateSources"
+    <Target Name="ReadMetaData" BeforeTargets="BeforeBuild"
             Condition="!Exists('$(PluginToolTargetsFile)') and $(IsPlugin) and !$(IsPluginLoaderMetaBuild)">
         <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)" ConsoleToMSBuild="True" />
         <!--<Copy SourceFiles="$(ProjectDir)plugin.json" DestinationFiles="$(OutputDir)plugin.json" />-->
     </Target>
-    <Target Name="CopyConfig" BeforeTargets="CopyMetaDataDFile;ReadMetaData"
+    <Target Name="CopyConfig" BeforeTargets="BeforeBuild"
             Condition="!Exists('$(ProjectDir)Tools.Config.props')">
         <Copy SourceFiles="$(MSBuildThisFileDirectory)Tools.Config.props" DestinationFiles="$(ProjectDir)Tools.Config.props" />
     </Target>

@@ -8,7 +8,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
-    <Version>1.0.0.19</Version>
+    <Version>1.0.0.24</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Authors>kitUIN</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -30,10 +30,6 @@
     <None Include="$(OutputPath)\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
     <None Include="$(OutputPath)\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
     <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
-    <None Update="Assets\buildT\ShadowPluginLoader.Tool.targets">
-      <Pack>True</Pack>
-      <PackagePath>build\</PackagePath>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.0.3" />

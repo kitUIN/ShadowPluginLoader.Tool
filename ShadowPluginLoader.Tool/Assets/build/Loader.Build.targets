@@ -1,0 +1,20 @@
+﻿<Project>
+    <PropertyGroup>
+        <LoaderPropsFile Condition="$(LoaderTargetsFile) == ''">$(ProjectDir)Loaders.Build.props</LoaderPropsFile>
+        <LoaderPropsFile Condition="!Exist('$(LoaderPropsFile)')">$(MSBuildThisFileDirectory)Loaders.Build.props</LoaderPropsFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="$(OutputDir)plugin.d.json" Pack="true"
+              PackagePath="\build"/>
+        <None Include="$(LoaderPropsFile)" Pack="true"
+              PackagePath="\build\$(TargetName).props"/>
+    </ItemGroup>
+
+    <!-- Export Plugin Meta Data DefineFile When Release and IsPluginLoader -->
+    <Target Name="ExportMetaData" AfterTargets="CoreBuild"
+            Condition="$(Configuration.Contains('Release'))">
+        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForcePluginLoaderTool)" ConsoleToMSBuild="True" />
+    </Target>
+    
+</Project>

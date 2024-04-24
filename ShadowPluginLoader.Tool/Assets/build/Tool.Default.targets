@@ -1,0 +1,10 @@
+﻿<Project>
+    
+    <!-- Copy Tool Config To Project Dir Before Build -->
+    <Target Name="CopyConfig" BeforeTargets="BeforeBuild"
+            Condition="!Exists('$(ProjectDir)Tools.Config.props') ">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)Tools.Config.props"
+              DestinationFiles="$(ProjectDir)Tools.Config.props"/>
+    </Target>
+
+</Project>

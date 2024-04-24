@@ -103,7 +103,7 @@ namespace ShadowPluginLoader.Tool
             {
                 _projectPath = args[1];
                 var csproj = args[2];
-                ReadMetaWindow.Read(_projectPath,csproj);
+                ReadMetaWindow.Read(_projectPath, csproj);
             }
             
         }

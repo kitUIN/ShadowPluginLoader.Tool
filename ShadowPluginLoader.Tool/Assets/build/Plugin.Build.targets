@@ -1,0 +1,17 @@
+﻿<Project>
+
+    <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
+    <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)"
+              ConsoleToMSBuild="True"/>
+    </Target>
+
+    <!-- Copy PluginMeta DefineFile To Plugin Dir -->
+    <Target Name="CopyPluginDFiles" BeforeTargets="ReadMetaData"
+            Condition="Exist('$(PluginDFile)') ">
+        <!-- PluginDFile is from `Loaders.Build.props` -->
+        <Copy
+                SourceFiles="$(PluginDFile)"
+                DestinationFiles="$(ProjectDir)plugin.d.json"/>
+    </Target>
+</Project>

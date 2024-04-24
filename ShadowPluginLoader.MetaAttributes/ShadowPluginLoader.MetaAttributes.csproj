@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Nuget -->
-        <Version>1.0.0.3</Version>
+        <Version>1.0.1.0</Version>
         <PackageId>ShadowPluginLoader.MetaAttributes</PackageId>
         <Authors>kitUIN</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -16,7 +16,7 @@
         <Description>✨ ShadowPluginLoader MetaAttributes✨</Description>
         <Copyright>Copyright 2024</Copyright>
         <PackageTags>kitUIN;plugin-loader;plugin;extension;attribute</PackageTags>
-        <PackageOutputPath>.\NugetPackages</PackageOutputPath>
+        <PackageOutputPath>..\ShadowPluginLoader.Tool\NugetPackages</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>

@@ -18,7 +18,7 @@ public class MetaAttribute: Attribute
     /// <summary>
     /// Mapping Project PropertyGroup Value
     /// </summary>
-    public string PropertyGroupName { get; init; }
+    public string? PropertyGroupName { get; init; }
     
     /// <summary>
     /// Using Regex To Validate

@@ -27,12 +27,12 @@ public static class ExportMetaMethod
     {
         if (property.Name == "TypeId")
         {
-            Console.WriteLine("[Build] ExportMeta | Warning | Not Support Property Name: TypeId");
+            Logger.Log("Not Support Property Name: TypeId", LoggerLevel.Warning);
             return false;
         }
 
         var f = Types.Any(x => x == property.PropertyType.Name);
-        if (!f) Console.WriteLine($"[Build] ExportMeta | Warning | {property.Name}: Not Support {property.PropertyType.Name} Type");
+        if (!f) Logger.Log($"{property.Name}: Not Support {property.PropertyType.Name} Type", LoggerLevel.Warning);
         return f;
     }
 
@@ -51,26 +51,29 @@ public static class ExportMetaMethod
         {
             if (!CheckExportPropertyType(property)) continue;
             var m = property.GetCustomAttribute<MetaAttribute>();
-            if (m is not null)
-            {
-                if (m.Exclude) continue;
-                if (m.Required) required.Add(property.Name);
-            }
-
-            var prop = new JsonObject()
+            if (m is { Exclude: true }) continue;
+            var prop = new JsonObject
             {
                 ["Type"] = property.PropertyType.Name,
                 ["PropertyGroupName"] = string.IsNullOrEmpty(m?.PropertyGroupName)
                     ? property.Name
                     : m.PropertyGroupName
             };
-
-            if (!string.IsNullOrEmpty(m?.Regex))
+            if (m is not null)
             {
-                prop["Regex"] = m.Regex;
+                if (m.Nullable)
+                {
+                    prop["Nullable"] = m.Nullable;
+                }
+
+                if (m.Required) required.Add(property.Name);
+                if (!string.IsNullOrEmpty(m?.Regex))
+                {
+                    prop["Regex"] = m.Regex;
+                }
             }
 
-            Console.WriteLine($"[Build] ExportMeta | Info | {property.Name}: {property.PropertyType.Name} -> plugin.d.json");
+            Logger.Log($"{property.Name}: {property.PropertyType.Name} -> plugin.d.json");
             props[property.Name] = prop;
         }
 
@@ -95,8 +98,8 @@ public static class ExportMetaMethod
             .FirstOrDefault(
                 x => x.GetCustomAttributes()
                     .Any(y => y is ExportMetaAttribute));
-        if (type is null) throw new Exception("[Build] ExportMeta | Error | Not Found ExportMetaAttribute In Any Class");
+        if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
         WriteDefineFile(type);
-        Console.WriteLine($"[Build] ExportMeta | Success | plugin.d.json -> {Path.Combine(_outputPath, "plugin.d.json")}");
+        Logger.Log($"plugin.d.json -> {Path.Combine(_outputPath, "plugin.d.json")}", LoggerLevel.Success);
     }
 }

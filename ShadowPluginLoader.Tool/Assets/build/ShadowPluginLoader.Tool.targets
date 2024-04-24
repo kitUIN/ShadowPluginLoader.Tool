@@ -4,7 +4,7 @@
     <PropertyGroup>
         <IMetaType>ShadowPluginLoader.WinUI.Interfaces.IPluginMetaData</IMetaType>
         <ForcePluginLoaderTool  Condition="$(ForcePluginLoaderTool) == ''">false</ForcePluginLoaderTool>
-        <IsPluginLoaderMetaBuild  Condition="$(IsPluginLoaderMetaBuild) == ''">false</IsPluginLoaderMetaBuild>
+        <IsPluginLoader  Condition="$(IsPluginLoader) == ''">false</IsPluginLoader>
         <IsPlugin  Condition="$(IsPlugin) == ''">false</IsPlugin>
     </PropertyGroup>
     <PropertyGroup>
@@ -27,8 +27,8 @@
     
     
     <Import Project="$(ToolTargetsFile)"/>
-    <Import Project="$(LoaderToolTargetsFile)" Condition="$(IsPluginLoaderMetaBuild)"/>
-    <Import Project="$(PluginToolTargetsFile)" Condition="$(IsPlugin) and !$(IsPluginLoaderMetaBuild)"/>
+    <Import Project="$(LoaderToolTargetsFile)" Condition="$(IsPluginLoader)"/>
+    <Import Project="$(PluginToolTargetsFile)" Condition="$(IsPlugin) and !$(IsPluginLoader)"/>
 
 
 

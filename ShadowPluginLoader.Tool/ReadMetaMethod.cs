@@ -76,6 +76,7 @@ public static class ReadMetaMethod
                 continue;
             }
 
+            var nullable = false;
             var current = properties[name]!;
             var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
             var property = propertyGroup.SelectSingleNode(propertyGroupName);
@@ -91,7 +92,10 @@ public static class ReadMetaMethod
                     throw new Exception($"{name}: {value} Does Not Match Regex: {regex}");
                 }
             }
-
+            if (current["Nullable"] is not null && current["Nullable"]!.GetValue<bool>())
+            {
+                nullable = true;
+            }
             switch (type)
             {
                 case "String":
@@ -123,9 +127,13 @@ public static class ReadMetaMethod
 
                         res[name] = arrays;
                     }
-                    else
+                    else if(nullable)
                     {
                         res[name] = null;
+                    }
+                    else
+                    {
+                        throw new Exception($"Missing Value Of {name}, It Is Not Be Nullable");
                     }
 
                     break;

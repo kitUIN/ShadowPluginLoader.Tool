@@ -8,7 +8,7 @@
 
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="ReadMetaData"
-            Condition="Exist('$(PluginDFile)') ">
+            Condition="Exists('$(PluginDFile)') ">
         <!-- PluginDFile is from `Loaders.Build.props` -->
         <Copy
                 SourceFiles="$(PluginDFile)"

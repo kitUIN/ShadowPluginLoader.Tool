@@ -1,7 +1,7 @@
 ﻿<Project>
     <PropertyGroup>
         <LoaderPropsFile Condition="$(LoaderTargetsFile) == ''">$(ProjectDir)Loaders.Build.props</LoaderPropsFile>
-        <LoaderPropsFile Condition="!Exist('$(LoaderPropsFile)')">$(MSBuildThisFileDirectory)Loaders.Build.props</LoaderPropsFile>
+        <LoaderPropsFile Condition="!Exists('$(LoaderPropsFile)')">$(MSBuildThisFileDirectory)Loaders.Build.props</LoaderPropsFile>
     </PropertyGroup>
     
     <ItemGroup>

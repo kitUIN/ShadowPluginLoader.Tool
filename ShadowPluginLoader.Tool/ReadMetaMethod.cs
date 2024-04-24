@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace ShadowPluginLoader.Tool;
 
-public static class ReadMetaWindow
+public static class ReadMetaMethod
 {
     private static string _projectPath = "";
 
@@ -15,9 +15,7 @@ public static class ReadMetaWindow
     {
         var file = Path.Combine(_projectPath, "plugin.d.json");
         if (!File.Exists(file))
-            throw new Exception(Program.IsCn
-                ? $"[ReadMeta] 缺失 {_projectPath}plugin.d.json"
-                : $"[ReadMeta] Missing {_projectPath}plugin.d.json");
+            throw new Exception($"Missing {_projectPath}plugin.d.json");
         return JsonNode.Parse(File.ReadAllText(file))!;
     }
 
@@ -27,13 +25,12 @@ public static class ReadMetaWindow
             Path.Combine(_projectPath, "plugin.json"),
             jsonObject.ToJsonString(new JsonSerializerOptions { WriteIndented = true })
         );
-        Console.WriteLine($"[ReadMeta] plugin.json -> {_projectPath}plugin.json");
+        Logger.Log($"plugin.json -> {_projectPath}plugin.json", LoggerLevel.Success);
     }
 
     private static void WarnDependencies()
     {
-        Console.WriteLine("[ReadMeta] " +
-                          (Program.IsCn ? "警告: 插件未指定依赖, 已忽略" : "Warning: Dependency not specified, ignored."));
+        Logger.Log("Dependency not specified, ignored.", LoggerLevel.Warning);
     }
 
     private static JsonArray LoadDependencies(XmlNode root)
@@ -83,9 +80,7 @@ public static class ReadMetaWindow
             var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
             var property = propertyGroup.SelectSingleNode(propertyGroupName);
             if (property is null)
-                throw new Exception(Program.IsCn
-                    ? $"[ReadMeta] PropertyGroup中缺少属性{propertyGroupName}"
-                    : $"[ReadMeta] Missing property {propertyGroupName} In PropertyGroup");
+                throw new Exception($"Missing property {propertyGroupName} In PropertyGroup");
             var type = current["Type"]!.GetValue<string>();
             var value = property.InnerText;
             if (current["Regex"] is not null)
@@ -93,9 +88,7 @@ public static class ReadMetaWindow
                 var regex = current["Regex"]!.GetValue<string>();
                 if (!Regex.IsMatch(value, regex))
                 {
-                    throw new Exception("[ReadMeta]" + (
-                        Program.IsCn ? $"{name}: {value} 不匹配正则:{regex}" :
-                            $"{name}: {value} does not match regex:{regex}"));
+                    throw new Exception($"{name}: {value} Does Not Match Regex: {regex}");
                 }
             }
 

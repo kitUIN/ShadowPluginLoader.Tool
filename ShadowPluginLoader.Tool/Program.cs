@@ -6,106 +6,58 @@ using System.Windows.Markup;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Windows;
+using ShadowPluginLoader.MetaAttributes;
 
 namespace ShadowPluginLoader.Tool
 {
     internal class Program
     {
-        public static string DirPath = Environment.CurrentDirectory;
-        public static string OutputPath = "";
-        private static string _projectPath = "";
-        public static string TypeIPluginMetaData = "";
-        public static bool IsCn;
+        // public static string DirPath = Environment.CurrentDirectory;
+        private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "OutputPath"};
+        private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath"};
 
-        private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "TypeIPluginMetaData", "OutputPath", "ProjectPath", "Forces" };
-
-        private static void ShowArgs(string[] args, string[] name)
+        private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
         {
             Console.WriteLine("[ExportMeta] Start! Args:");
-            for (var i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Count; i++)
             {
                 Console.WriteLine($"[ExportMeta] {name[i]}: {args[i]}");
             }
         }
-        private static readonly List<string> Types = new()
-        {
-            "String",
-            "Int32",
-            "Boolean",
-            "String[]",
-            "Int32[]",
-            "Boolean[]",
-        };
-        public static bool CheckExportPropertyType(string type)
-        {
-            return Types.Any(x => x == type);
-        }
-        private static bool IsChinese()
-        {
-            var lcid = System.Globalization.CultureInfo.CurrentCulture.LCID;
-            return lcid is 0x804 or 0xc04 or 0x1404 or 0x1004 or 0x404;
-        }
-
-        #region Cache
-        private static bool CheckCache()
-        {
-            return File.Exists(Path.Combine(_projectPath, "ToolTarget.cache"));
-        }
-        private static string LoadCache()
-        {
-            return File.ReadAllText(Path.Combine(_projectPath, "ToolTarget.cache"));
-        }
-        public static void BuildCache(string type)
-        {
-            File.WriteAllText(Path.Combine(_projectPath, "ToolTarget.cache"), type);
-        }
         
-        #endregion
-        
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
-            IsCn = IsChinese();
-            var method = args[0];
-            if (method == "0")
+            try
             {
-                ShowArgs(args, ArgNames0);
-                var exportMetaFile = args[1];
-                TypeIPluginMetaData = args[2];
-                OutputPath = args[3];
-                _projectPath = args[4];
-                var forces = args[5];
-                if (forces == "false" && CheckCache())
+                var method = args[0]; // Method
+                if (method == "0")
                 {
-                    var asm = Assembly.LoadFrom(exportMetaFile);
-                    ExportMetaWindow.ExportMeta(asm, LoadCache());
+                    ShowArgs(args, ArgNames0);
+                    var exportMetaFile = args[1]; // ExportMetaFile
+                    var outputPath = args[2]; // OutputPath
+                    ExportMetaMethod.ExportMeta(Assembly.LoadFrom(exportMetaFile), outputPath);
                 }
-                else
+                else if (method == "1")
                 {
-                    var thread = new Thread(() =>
-                    {
-                        var window = new ExportMetaWindow(exportMetaFile);
-
-
-                        window.Closed += (sender2, e2) =>
-                            window.Dispatcher.InvokeShutdown();
-
-                        window.Show();
-                        System.Windows.Threading.Dispatcher.Run();
-                    });
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.Start();
+                    ShowArgs(args, ArgNames1);
+                    var projectPath = args[1]; // projectPath
+                    var csproj = args[2]; // csprojPath
+                    ReadMetaMethod.Read(projectPath, csproj);
                 }
-                
             }
-            else if (method == "1")
+            catch (Exception exception)
             {
-                _projectPath = args[1];
-                var csproj = args[2];
-                ReadMetaWindow.Read(_projectPath, csproj);
+                Logger.Log(exception.Message, LoggerLevel.Error);
+                return -1;
             }
-            
+            return 0;
         }
+
+ 
+        
     }
 }

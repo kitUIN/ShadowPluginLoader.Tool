@@ -14,7 +14,8 @@
     <!-- Export Plugin Meta Data DefineFile When Release and IsPluginLoader -->
     <Target Name="ExportMetaData" AfterTargets="CoreBuild"
             Condition="$(Configuration.Contains('Release'))">
-        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(IMetaType) $(OutputDir) $(ProjectDir) $(ForcePluginLoaderTool)" ConsoleToMSBuild="True" />
+        <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(OutputDir)" 
+              ConsoleToMSBuild="True" />
     </Target>
     
 </Project>

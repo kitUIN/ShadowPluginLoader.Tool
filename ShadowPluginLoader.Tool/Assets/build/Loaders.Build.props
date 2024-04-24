@@ -3,7 +3,5 @@
     <PropertyGroup>
         <!-- Plugin Meta Define File -->
         <PluginDFile>$(MSBuildThisFileDirectory)plugin.d.json</PluginDFile>
-        <!-- Plugin Project File(.csproj) -->
-        <MSBuildProjectFile>$(TargetName)csproj</MSBuildProjectFile>
     </PropertyGroup>
 </Project>

@@ -1,5 +1,8 @@
 ﻿<Project>
-
+    <ItemGroup>
+        <AdditionalFiles Include="$(ProjectDir)plugin.d.json" />
+        <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
         <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)"
@@ -14,4 +17,5 @@
                 SourceFiles="$(PluginDFile)"
                 DestinationFiles="$(ProjectDir)plugin.d.json"/>
     </Target>
+
 </Project>

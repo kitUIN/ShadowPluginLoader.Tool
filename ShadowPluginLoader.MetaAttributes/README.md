@@ -6,6 +6,7 @@ ShadowPluginLoader的元数据特性
 - Exclude 排除该参数
 - Regex 正则表达式
 - PropertyGroupName 对应的在PropertyGroup中的值,默认为Property名
+- Nullable 是否可空
 ```csharp
 /// <summary>
 /// Default PluginMetaData

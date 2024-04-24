@@ -24,4 +24,9 @@ public class MetaAttribute: Attribute
     /// Using Regex To Validate
     /// </summary>
     public string? Regex { get; init; }
+    
+    /// <summary>
+    /// Can Nullable
+    /// </summary>
+    public bool Nullable { get; init; }
 }

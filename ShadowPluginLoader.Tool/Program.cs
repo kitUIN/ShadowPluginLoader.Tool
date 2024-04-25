@@ -17,18 +17,19 @@ namespace ShadowPluginLoader.Tool
     internal class Program
     {
         // public static string DirPath = Environment.CurrentDirectory;
-        private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "OutputPath"};
-        private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath"};
+        private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "OutputPath" };
+        private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath" };
+        private static readonly string[] ArgNames2 = { "Method", "OutputPath", "ExcludesFile","zipPath", "defaultExclude"};
 
         private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
         {
-            Console.WriteLine("[ExportMeta] Start! Args:");
+            Logger.Log("Start! Args:", LoggerLevel.Success);
             for (var i = 0; i < args.Count; i++)
             {
-                Console.WriteLine($"[ExportMeta] {name[i]}: {args[i]}");
+                Logger.Log($"Arg{i} {name[i]}: {args[i]}");
             }
         }
-        
+
         private static int Main(string[] args)
         {
             try
@@ -48,16 +49,23 @@ namespace ShadowPluginLoader.Tool
                     var csproj = args[2]; // csprojPath
                     ReadMetaMethod.Read(projectPath, csproj);
                 }
+                else if (method == "2")
+                {
+                    ShowArgs(args, ArgNames2);
+                    var outputPath = args[1]; // OutputPath
+                    var excludesFile = args[2]; // ExcludesFile
+                    var zipPath = args[3];
+                    var defaultExclude = Convert.ToBoolean(args[4]);
+                    PackageMethod.Exclude(outputPath, zipPath, excludesFile, defaultExclude);
+                }
             }
             catch (Exception exception)
             {
-                Logger.Log(exception.Message, LoggerLevel.Error);
+                Logger.Log($"{exception.GetType().Name}: {exception.Message}", LoggerLevel.Error);
                 return -1;
             }
+
             return 0;
         }
-
- 
-        
     }
 }

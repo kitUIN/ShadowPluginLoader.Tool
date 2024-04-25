@@ -1,4 +1,11 @@
 ﻿<Project>
+    <PropertyGroup>
+        <!-- Exclude File -->
+        <ExcludeFile  Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
+        <ExcludeFile  Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
+    </PropertyGroup>
+    <Import Project="$(ProjectDir)Plugin.Build.props" Condition="Exists('$(ProjectDir)Plugin.Build.props')"/>
+    <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>
         <AdditionalFiles Include="$(ProjectDir)plugin.d.json" />
         <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest" />
@@ -17,5 +24,10 @@
                 SourceFiles="$(PluginDFile)"
                 DestinationFiles="$(ProjectDir)plugin.d.json"/>
     </Target>
-
+    <!-- Package Plugin To PluginPackage Dir -->
+    <Target Name="PackagePlugin" BeforeTargets="Build"
+            Condition="$(AutoPluginPackage)">
+        <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(DefaultExclude)"
+              ConsoleToMSBuild="True"/>
+    </Target>
 </Project>

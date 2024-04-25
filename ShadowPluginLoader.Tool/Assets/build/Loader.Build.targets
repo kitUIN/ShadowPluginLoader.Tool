@@ -1,9 +1,8 @@
 ﻿<Project>
     <PropertyGroup>
-        <LoaderPropsFile Condition="$(LoaderTargetsFile) == ''">$(ProjectDir)Loaders.Build.props</LoaderPropsFile>
+        <LoaderPropsFile Condition="$(LoaderPropsFile) == ''">$(ProjectDir)Loaders.Build.props</LoaderPropsFile>
         <LoaderPropsFile Condition="!Exists('$(LoaderPropsFile)')">$(MSBuildThisFileDirectory)Loaders.Build.props</LoaderPropsFile>
     </PropertyGroup>
-    
     <ItemGroup>
         <None Include="$(OutputDir)plugin.d.json" Pack="true"
               PackagePath="\build"/>

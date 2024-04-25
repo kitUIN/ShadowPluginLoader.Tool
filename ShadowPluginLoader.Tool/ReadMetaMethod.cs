@@ -81,7 +81,7 @@ public static class ReadMetaMethod
             var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
             var property = propertyGroup.SelectSingleNode(propertyGroupName);
             if (property is null)
-                throw new Exception($"Missing property {propertyGroupName} In PropertyGroup");
+                throw new Exception($"Missing property <{propertyGroupName}> In <PropertyGroup>");
             var type = current["Type"]!.GetValue<string>();
             var value = property.InnerText;
             if (current["Regex"] is not null)

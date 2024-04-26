@@ -8,7 +8,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
-    <Version>1.0.1.13</Version>
+    <Version>1.0.1.16</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Authors>kitUIN</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -31,7 +31,7 @@
     <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.1.1" />
+    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.2.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\build\**"/>

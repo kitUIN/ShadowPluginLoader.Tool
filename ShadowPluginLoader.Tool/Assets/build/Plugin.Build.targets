@@ -1,14 +1,14 @@
 ﻿<Project>
     <PropertyGroup>
         <!-- Exclude File -->
-        <ExcludeFile  Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
-        <ExcludeFile  Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
+        <ExcludeFile Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
+        <ExcludeFile Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
     </PropertyGroup>
     <Import Project="$(ProjectDir)Plugin.Build.props" Condition="Exists('$(ProjectDir)Plugin.Build.props')"/>
     <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>
-        <AdditionalFiles Include="$(ProjectDir)plugin.d.json" />
-        <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest" />
+        <AdditionalFiles Include="$(ProjectDir)plugin.d.json"/>
+        <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
@@ -20,9 +20,11 @@
     <Target Name="CopyPluginDFiles" BeforeTargets="ReadMetaData"
             Condition="Exists('$(PluginDFile)') ">
         <!-- PluginDFile is from `Loaders.Build.props` -->
-        <Copy
-                SourceFiles="$(PluginDFile)"
-                DestinationFiles="$(ProjectDir)plugin.d.json"/>
+        <Copy SourceFiles="$(PluginDFile)"
+              DestinationFiles="$(ProjectDir)plugin.d.json"
+              OverwriteReadOnlyFiles="true"/>
+        <Message Text="Copy $(PluginDFile) -> $(ProjectDir)plugin.d.json" 
+                 Importance="high"/>
     </Target>
     <!-- Package Plugin To PluginPackage Dir -->
     <Target Name="PackagePlugin" BeforeTargets="Build"

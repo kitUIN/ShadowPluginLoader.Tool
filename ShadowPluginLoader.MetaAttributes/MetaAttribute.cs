@@ -8,7 +8,7 @@ public class MetaAttribute: Attribute
     /// <summary>
     /// Is Required
     /// </summary>
-    public bool Required { get; init; }
+    public bool Required { get; init; } = true;
     
     /// <summary>
     /// Is Excluded

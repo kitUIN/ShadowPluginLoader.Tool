@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Nuget -->
-        <Version>1.0.2.0</Version>
+        <Version>1.0.3.0</Version>
         <PackageId>ShadowPluginLoader.MetaAttributes</PackageId>
         <Authors>kitUIN</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

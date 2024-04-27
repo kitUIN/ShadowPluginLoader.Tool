@@ -9,10 +9,14 @@
         <None Include="$(LoaderPropsFile)" Pack="true"
               PackagePath="\build\$(TargetName).props"/>
     </ItemGroup>
-
-    <!-- Export Plugin Meta Data DefineFile When Release and IsPluginLoader -->
-    <Target Name="ExportMetaData" AfterTargets="CoreBuild"
-            Condition="$(Configuration.Contains('Release'))">
+    <ItemGroup>
+        <None Include="$(OutputDir)plugin.d.json" Pack="true"
+              PackagePath="\buildTransitive"/>
+        <None Include="$(LoaderPropsFile)" Pack="true"
+              PackagePath="\buildTransitive\$(TargetName).props"/>
+    </ItemGroup>
+    <!-- Export Plugin Meta Data DefineFile When IsPluginLoader -->
+    <Target Name="ExportMetaData" AfterTargets="CoreBuild" >
         <Exec Command="dotnet $(ToolExeFile) 0 $(OutputFile) $(OutputDir)" 
               ConsoleToMSBuild="True" />
     </Target>

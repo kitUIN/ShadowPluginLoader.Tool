@@ -77,55 +77,6 @@ public static class ReadMetaMethod
             "string" => JsonValue.Create(value) ,
             _ => throw new Exception($"Not Support Type: {type}")
         };
-        /*switch (type)
-        {
-            case "String":
-                res[name] = value;
-                break;
-            case "Int32":
-                res[name] = Convert.ToInt32(value);
-                break;
-            case "Boolean":
-                res[name] = Convert.ToBoolean(value);
-                res[name] = JsonValue.Create()
-                break;
-            default:
-            {
-                if (type.EndsWith("[]"))
-                {
-                    var items = property.SelectNodes("Item");
-                    if (items is null) return;
-                    var arrays = new JsonArray();
-                    Action<string> action = type switch
-                    {
-                        "int[]" => v => { arrays.Add(Convert.ToInt32(v)); },
-                        "uint[]" => v => { arrays.Add(Convert.ToUInt32(v)); },
-                        "short[]" => v => { arrays.Add(Convert.ToInt16(v)); },
-                        "ushort[]" => v => { arrays.Add(Convert.ToUInt16(v)); },
-                        "long[]" => v => { arrays.Add(Convert.ToInt16(v)); },
-                        "ulong[]" => v => { arrays.Add(Convert.ToUInt16(v)); },
-                        "bool[]" => v => { arrays.Add(Convert.ToBoolean(v)); },
-                        _ => v => { arrays.Add(v); }
-                    };
-                    foreach (XmlNode item in items)
-                    {
-                        action(item.InnerText);
-                    }
-
-                    res[name] = arrays;
-                }
-                else if(nullable)
-                {
-                    res[name] = null;
-                }
-                else
-                {
-                    throw new Exception($"Missing Value Of {name}, It Is Not Be Nullable");
-                }
-
-                break;
-            }
-        }*/
     }
     private static void CheckJsonRequired(JsonNode json, XmlNode root, XmlNode propertyGroup)
     {

@@ -82,10 +82,19 @@ public static class ReadMetaMethod
     {
         var res = new JsonObject();
         var required = json["Required"]!.AsArray();
-        var properties = json["Properties"]!;
-        foreach (var node in required)
+        var properties = json["Properties"]!.AsObject();
+        foreach (var n in required)
         {
-            var name = node!.GetValue<string>();
+            var name = n!.GetValue<string>();
+            if (name == "Dependencies") continue;
+            var propertyGroupName = properties[name]!["PropertyGroupName"]!.GetValue<string>();
+            var property = propertyGroup.SelectSingleNode(propertyGroupName);
+            if (property is null)
+                throw new Exception($"Missing Required Property <{propertyGroupName}> In <PluginMeta>");
+        }
+        foreach (var node in properties)
+        {
+            var name = node!.Key;
             if (name == "Dependencies")
             {
                 res[name] = LoadDependencies(root);
@@ -93,11 +102,11 @@ public static class ReadMetaMethod
             }
 
             var nullable = false;
-            var current = properties[name]!;
+            var current = node.Value!;
             var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
             var property = propertyGroup.SelectSingleNode(propertyGroupName);
             if (property is null)
-                throw new Exception($"Missing property <{propertyGroupName}> In <PluginMeta>");
+                continue;
             var type = current["Type"]!.GetValue<string>();
             if (type.EndsWith("?"))
             {

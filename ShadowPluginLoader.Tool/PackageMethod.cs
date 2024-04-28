@@ -28,8 +28,11 @@ public static class PackageMethod
         Logger.Log($"Pack Plugin: {zipPath}", LoggerLevel.Success);
     }
 
-    public static void Exclude(string startPath, string zipPath, string excludePath, bool defaultExclude)
+    public static void Exclude(string startPath, string excludePath, 
+        string zipDir, string zipName,string zipExt,string configuration,
+        bool defaultExclude)
     {
+        var zipPath = Path.Combine(zipDir, $"{zipName}{(configuration == "Debug" ? "-Debug" : "")}{zipExt}");
         if (File.Exists(zipPath)) File.Delete(zipPath);
         if (!defaultExclude) DefaultExclude.Clear();
         if (File.Exists(excludePath))

@@ -3,7 +3,11 @@
     <PropertyGroup>
         <!-- Enable Default Exclude -->
         <DefaultExclude>true</DefaultExclude>
+        <!-- Package Path -->
+        <PluginPackagePath>$(ProjectDir)Packages\</PluginPackagePath>
         <!-- Package Name -->
-        <PluginPackagePath>$(ProjectDir)Packages\$(TargetName)-$(Version).zip</PluginPackagePath>
+        <PluginPackageName>$(TargetName)-$(Version)</PluginPackageName>
+        <!-- Package Ext -->
+        <PluginPackageExt>.zip</PluginPackageExt>
     </PropertyGroup>
 </Project>

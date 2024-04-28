@@ -12,7 +12,7 @@
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile) $(PluginMeta)"
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile) &quot;$(PluginMeta)&quot;"
               ConsoleToMSBuild="True"/>
     </Target>
 
@@ -29,7 +29,7 @@
     <!-- Package Plugin To PluginPackage Dir -->
     <Target Name="PackagePlugin" BeforeTargets="Build"
             Condition="$(AutoPluginPackage)">
-        <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(DefaultExclude)"
+        <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration) $(DefaultExclude)"
               ConsoleToMSBuild="True"/>
     </Target>
 </Project>

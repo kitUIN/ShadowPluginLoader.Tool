@@ -19,7 +19,8 @@ namespace ShadowPluginLoader.Tool
         // public static string DirPath = Environment.CurrentDirectory;
         private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "OutputPath" };
         private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath" ,"PluginMeta"};
-        private static readonly string[] ArgNames2 = { "Method", "OutputPath", "ExcludesFile","zipPath", "defaultExclude"};
+        private static readonly string[] ArgNames2 = { "Method", "OutputPath", "ExcludesFile",
+            "zipPath","zipName","zipExt","Configuration", "defaultExclude"};
 
         private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
         {
@@ -59,9 +60,14 @@ namespace ShadowPluginLoader.Tool
                     ShowArgs(args, ArgNames2);
                     var outputPath = args[1]; // OutputPath
                     var excludesFile = args[2]; // ExcludesFile
-                    var zipPath = args[3];
-                    var defaultExclude = Convert.ToBoolean(args[4]);
-                    PackageMethod.Exclude(outputPath, zipPath, excludesFile, defaultExclude);
+                    var zipPath = args[3]; // zipPath
+                    var zipName = args[4]; // zipName
+                    var zipExt = args[5]; // zipExt
+                    var configuration = args[6]; // Configuration
+                    var defaultExclude = Convert.ToBoolean(args[7]);
+                    PackageMethod.Exclude(outputPath,excludesFile, 
+                        zipPath, zipName,zipExt,configuration,
+                        defaultExclude);
                 }
             }
             catch (Exception exception)

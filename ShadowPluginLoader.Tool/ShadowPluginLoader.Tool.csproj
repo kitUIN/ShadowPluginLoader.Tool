@@ -8,8 +8,9 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>1.0.3.10</Version>
+    <Version>1.0.4.0</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
+    <Owner>kitUIN</Owner>
     <Authors>kitUIN</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

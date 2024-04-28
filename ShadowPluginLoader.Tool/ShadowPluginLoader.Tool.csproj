@@ -4,11 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-
-    <Version>1.0.2.3</Version>
+    <NoWarn>NU5128;NU5129</NoWarn>
+    
+    <Version>1.0.3.6</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Authors>kitUIN</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,7 +18,7 @@
     <Description>✨ ShadowPluginLoader Build Tool✨</Description>
     <Copyright>Copyright 2024</Copyright>
     <PackageTags>kitUIN;plugin-loader;plugin;extension;msbuild</PackageTags>
-    <PackageOutputPath>.\NugetPackages</PackageOutputPath>
+    <PackageOutputPath>..\..\NugetPackages</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
@@ -31,7 +31,7 @@
     <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.2.0" />
+    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\build\**"/>

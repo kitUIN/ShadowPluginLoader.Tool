@@ -12,7 +12,7 @@
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile)"
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile) $(PluginMeta)"
               ConsoleToMSBuild="True"/>
     </Target>
 

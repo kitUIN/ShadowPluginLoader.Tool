@@ -16,7 +16,7 @@
         <Description>✨ ShadowPluginLoader MetaAttributes✨</Description>
         <Copyright>Copyright 2024</Copyright>
         <PackageTags>kitUIN;plugin-loader;plugin;extension;attribute</PackageTags>
-        <PackageOutputPath>..\ShadowPluginLoader.Tool\NugetPackages</PackageOutputPath>
+        <PackageOutputPath>..\..\NugetPackages</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>

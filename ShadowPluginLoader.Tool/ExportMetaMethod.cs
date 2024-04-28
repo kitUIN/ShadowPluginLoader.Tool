@@ -13,27 +13,43 @@ public static class ExportMetaMethod
 {
     private static string _outputPath = "";
 
-    private static readonly List<string> Types = new()
+    private static readonly List<Type> Types = new()
     {
-        "String",
-        "Int32",
-        "Boolean",
-        "String[]",
-        "Int32[]",
-        "Boolean[]",
+        typeof(string),typeof(bool),typeof(int),typeof(float),typeof(double),typeof(long),typeof(short), typeof(decimal),
+        typeof(uint),typeof(ushort),typeof(ulong),
+        typeof(bool?),typeof(int?),typeof(float?),typeof(double?),typeof(long?),typeof(short?), typeof(decimal?),
+        typeof(uint?),typeof(ushort?),typeof(ulong?),
+        typeof(string[]),typeof(bool[]),typeof(int[]),typeof(float[]),typeof(double[]),typeof(long[]),typeof(short[]), typeof(decimal[]),
+        typeof(uint[]),typeof(ushort[]),typeof(ulong[])
     };
-
-    private static bool CheckExportPropertyType(PropertyInfo property)
+    private static readonly List<string> TypeNames = new()
+    {
+        "string","bool","int","float","double","long","short","decimal",
+        "unit","ushort","ulong",
+        "bool?","int?","float?","double?","long?","short?","decimal?",
+        "unit?","ushort?","ulong?",
+        "string[]","bool[]","int[]","float[]","double[]","long[]","short[]","decimal[]",
+        "unit[]","ushort[]","ulong[]",
+    };
+    
+    private static string? CheckExportPropertyType(PropertyInfo property)
     {
         if (property.Name == "TypeId")
         {
-            Logger.Log("Not Support Property Name: TypeId", LoggerLevel.Warning);
-            return false;
+            // Logger.Log("Not Support Property Name: TypeId", LoggerLevel.Warning);
+            return null;
         }
 
-        var f = Types.Any(x => x == property.PropertyType.Name);
-        if (!f) Logger.Log($"{property.Name}: Not Support {property.PropertyType.Name} Type", LoggerLevel.Warning);
-        return f;
+        for (var i = 0; i < Types.Count; i++)
+        {
+            if (Types[i] == property.PropertyType)
+            {
+                return TypeNames[i];
+            }
+        }
+        Logger.Log($"{property.Name}: Not Support {property.PropertyType.FullName} Type",
+            LoggerLevel.Warning);
+        return null;
     }
 
     private static void WriteDefineFile(Type type)
@@ -49,12 +65,13 @@ public static class ExportMetaMethod
 
         foreach (var property in properties)
         {
-            if (!CheckExportPropertyType(property)) continue;
+            var typeName = CheckExportPropertyType(property);
+            if (typeName is null) continue;
             var m = property.GetCustomAttribute<MetaAttribute>();
             if (m is { Exclude: true }) continue;
             var prop = new JsonObject
             {
-                ["Type"] = property.PropertyType.Name,
+                ["Type"] = typeName,
                 ["PropertyGroupName"] = string.IsNullOrEmpty(m?.PropertyGroupName)
                     ? property.Name
                     : m.PropertyGroupName
@@ -65,15 +82,19 @@ public static class ExportMetaMethod
                 {
                     prop["Nullable"] = m.Nullable;
                 }
-
                 if (m.Required) required.Add(property.Name);
                 if (!string.IsNullOrEmpty(m?.Regex))
                 {
                     prop["Regex"] = m.Regex;
                 }
             }
+            else
+            {
+                if(typeName.EndsWith("?")) prop["Nullable"] = true;
+                required.Add(property.Name);
+            }
 
-            Logger.Log($"{property.Name}: {property.PropertyType.Name} -> plugin.d.json");
+            Logger.Log($"{property.Name}: {typeName} -> plugin.d.json");
             props[property.Name] = prop;
         }
 

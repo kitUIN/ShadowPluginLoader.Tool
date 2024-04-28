@@ -59,11 +59,76 @@ public static class ReadMetaMethod
 
         return arrays;
     }
-
-    private static void CheckJsonRequired(JsonNode json, XmlNode root)
+    
+    private static JsonValue? GetVale(string type,string value)
     {
-        var propertyGroup = root.SelectSingleNode("PropertyGroup");
-        if (propertyGroup is null) return;
+        return type switch
+        {
+            "int" => JsonValue.Create(Convert.ToInt32(value)),
+            "uint" => JsonValue.Create(Convert.ToUInt32(value)),
+            "short" => JsonValue.Create(Convert.ToInt16(value)),
+            "ushort" => JsonValue.Create(Convert.ToUInt16(value)),
+            "long" => JsonValue.Create(Convert.ToInt64(value)),
+            "ulong" => JsonValue.Create(Convert.ToUInt64(value)),
+            "bool" => JsonValue.Create(Convert.ToBoolean(value)),
+            "float" => JsonValue.Create(Convert.ToSingle(value)),
+            "double" => JsonValue.Create(Convert.ToDouble(value)),
+            "decimal" => JsonValue.Create(Convert.ToDecimal(value)),
+            "string" => JsonValue.Create(value) ,
+            _ => throw new Exception($"Not Support Type: {type}")
+        };
+        /*switch (type)
+        {
+            case "String":
+                res[name] = value;
+                break;
+            case "Int32":
+                res[name] = Convert.ToInt32(value);
+                break;
+            case "Boolean":
+                res[name] = Convert.ToBoolean(value);
+                res[name] = JsonValue.Create()
+                break;
+            default:
+            {
+                if (type.EndsWith("[]"))
+                {
+                    var items = property.SelectNodes("Item");
+                    if (items is null) return;
+                    var arrays = new JsonArray();
+                    Action<string> action = type switch
+                    {
+                        "int[]" => v => { arrays.Add(Convert.ToInt32(v)); },
+                        "uint[]" => v => { arrays.Add(Convert.ToUInt32(v)); },
+                        "short[]" => v => { arrays.Add(Convert.ToInt16(v)); },
+                        "ushort[]" => v => { arrays.Add(Convert.ToUInt16(v)); },
+                        "long[]" => v => { arrays.Add(Convert.ToInt16(v)); },
+                        "ulong[]" => v => { arrays.Add(Convert.ToUInt16(v)); },
+                        "bool[]" => v => { arrays.Add(Convert.ToBoolean(v)); },
+                        _ => v => { arrays.Add(v); }
+                    };
+                    foreach (XmlNode item in items)
+                    {
+                        action(item.InnerText);
+                    }
+
+                    res[name] = arrays;
+                }
+                else if(nullable)
+                {
+                    res[name] = null;
+                }
+                else
+                {
+                    throw new Exception($"Missing Value Of {name}, It Is Not Be Nullable");
+                }
+
+                break;
+            }
+        }*/
+    }
+    private static void CheckJsonRequired(JsonNode json, XmlNode root, XmlNode propertyGroup)
+    {
         var res = new JsonObject();
         var required = json["Required"]!.AsArray();
         var properties = json["Properties"]!;
@@ -81,8 +146,12 @@ public static class ReadMetaMethod
             var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
             var property = propertyGroup.SelectSingleNode(propertyGroupName);
             if (property is null)
-                throw new Exception($"Missing property <{propertyGroupName}> In <PropertyGroup>");
+                throw new Exception($"Missing property <{propertyGroupName}> In <PluginMeta>");
             var type = current["Type"]!.GetValue<string>();
+            if (type.EndsWith("?"))
+            {
+                type = type[..^1];
+            }
             var value = property.InnerText;
             if (current["Regex"] is not null)
             {
@@ -96,47 +165,39 @@ public static class ReadMetaMethod
             {
                 nullable = true;
             }
-            switch (type)
-            {
-                case "String":
-                    res[name] = value;
-                    break;
-                case "Int32":
-                    res[name] = Convert.ToInt32(value);
-                    break;
-                case "Boolean":
-                    res[name] = Convert.ToBoolean(value);
-                    break;
-                default:
-                {
-                    if (type.EndsWith("[]"))
-                    {
-                        var items = property.SelectNodes("Item");
-                        if (items is null) continue;
-                        var arrays = new JsonArray();
-                        Action<string> action = type switch
-                        {
-                            "Int32[]" => v => { arrays.Add(Convert.ToInt32(v)); },
-                            "Boolean[]" => v => { arrays.Add(Convert.ToBoolean(v)); },
-                            _ => v => { arrays.Add(v); }
-                        };
-                        foreach (XmlNode item in items)
-                        {
-                            action(item.InnerText);
-                        }
 
-                        res[name] = arrays;
-                    }
-                    else if(nullable)
+            if (nullable && value == "null")
+            {
+                res[name] = null;
+            }
+            else
+            {
+                if (type.EndsWith("[]"))
+                {
+                    var arrayType = type[..^2];
+                    var arrays = new JsonArray();
+                    if (property.InnerText.Contains(';'))
                     {
-                        res[name] = null;
+                        foreach (var v in property.InnerText.Split(";"))
+                        {
+                            arrays.Add(GetVale(arrayType, v));
+                        }
                     }
                     else
                     {
-                        throw new Exception($"Missing Value Of {name}, It Is Not Be Nullable");
+                        var items = property.SelectNodes("Item");
+                        if (items is null) continue;
+                        foreach (XmlNode item in items)
+                        {
+                            arrays.Add(GetVale(arrayType, item.InnerText));
+                        }
                     }
-
-                    break;
+                    res[name] = arrays;
+                    
+                }
+                else
+                {
+                    res[name] = GetVale(type, value);
                 }
             }
         }
@@ -144,14 +205,18 @@ public static class ReadMetaMethod
         SavePluginJson(res);
     }
 
-    public static void Read(string projectPath, string csproj)
+    public static void Read(string projectPath, string csproj,string meta)
     {
         _projectPath = projectPath;
         var json = GetDefineJson();
         var xmlDoc = new XmlDocument();
         xmlDoc.Load(Path.Combine(_projectPath, csproj));
+        var pluginMeta = new XmlDocument();
+        pluginMeta.LoadXml("<PluginMeta>"+meta+"</PluginMeta>");
         var root = xmlDoc.DocumentElement;
+        var pluginMetaRoot = pluginMeta.DocumentElement;
         if (root is null) return;
-        CheckJsonRequired(json, root);
+        if (pluginMetaRoot is null) return;
+        CheckJsonRequired(json, root, pluginMetaRoot);
     }
 }

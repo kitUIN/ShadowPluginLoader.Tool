@@ -7,6 +7,7 @@
         <IsPluginLoader  Condition="$(IsPluginLoader) == ''">false</IsPluginLoader>
         <IsPlugin  Condition="$(IsPlugin) == ''">false</IsPlugin>
         <AutoGenerateI18N  Condition="$(AutoGenerateI18N) == ''">true</AutoGenerateI18N>
+        <BuiltIn  Condition="$(BuiltIn) == ''">false</BuiltIn>
     </PropertyGroup>
     <PropertyGroup>
         <ToolExeFile>$(MSBuildThisFileDirectory)ShadowPluginLoader.Tool.dll</ToolExeFile>

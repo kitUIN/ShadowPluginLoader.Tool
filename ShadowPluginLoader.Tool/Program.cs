@@ -18,7 +18,7 @@ namespace ShadowPluginLoader.Tool
     {
         // public static string DirPath = Environment.CurrentDirectory;
         private static readonly string[] ArgNames0 = { "Method", "ExportMetaFile", "OutputPath" };
-        private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath" ,"PluginMeta"};
+        private static readonly string[] ArgNames1 = { "Method", "ProjectPath", "CsprojPath" ,"PluginMeta", "DllName"};
         private static readonly string[] ArgNames2 = { "Method", "OutputPath", "ExcludesFile",
             "zipPath","zipName","zipExt","Configuration", "defaultExclude"};
 
@@ -53,7 +53,8 @@ namespace ShadowPluginLoader.Tool
                     {
                         throw new Exception("Missing <PluginMeta> in <PropertyGroup>(.csproj)");
                     }
-                    ReadMetaMethod.Read(projectPath, csproj, pluginMeta);
+                    var dllName = args[4]; // DllName
+                    ReadMetaMethod.Read(projectPath, csproj, pluginMeta,dllName);
                 }
                 else if (method == "2")
                 {

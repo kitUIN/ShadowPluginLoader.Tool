@@ -78,9 +78,12 @@ public static class ReadMetaMethod
             _ => throw new Exception($"Not Support Type: {type}")
         };
     }
-    private static void CheckJsonRequired(JsonNode json, XmlNode root, XmlNode propertyGroup)
+    private static void CheckJsonRequired(JsonNode json, XmlNode root, XmlNode propertyGroup,string dllName)
     {
-        var res = new JsonObject();
+        var res = new JsonObject
+        {
+            ["DllName"] = dllName
+        };
         var required = json["Required"]!.AsArray();
         var properties = json["Properties"]!.AsObject();
         foreach (var n in required)
@@ -165,7 +168,7 @@ public static class ReadMetaMethod
         SavePluginJson(res);
     }
 
-    public static void Read(string projectPath, string csproj,string meta)
+    public static void Read(string projectPath, string csproj,string meta, string dllName)
     {
         _projectPath = projectPath;
         var json = GetDefineJson();
@@ -177,6 +180,6 @@ public static class ReadMetaMethod
         var pluginMetaRoot = pluginMeta.DocumentElement;
         if (root is null) return;
         if (pluginMetaRoot is null) return;
-        CheckJsonRequired(json, root, pluginMetaRoot);
+        CheckJsonRequired(json, root, pluginMetaRoot, dllName);
     }
 }

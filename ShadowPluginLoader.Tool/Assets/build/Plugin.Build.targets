@@ -8,10 +8,8 @@
     <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>
         <AdditionalFiles Include="$(ProjectDir)plugin.d.json"/>
-    </ItemGroup>
-    <ItemGroup Condition="!$(BuiltIn)">
         <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest"/>
-    </ItemGroup>
+    </ItemGroup> 
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
         <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile) &quot;$(PluginMeta)&quot; $(AssemblyName)"

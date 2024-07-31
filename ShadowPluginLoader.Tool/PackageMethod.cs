@@ -8,14 +8,14 @@ using System.IO.Compression;
 
 public static class PackageMethod
 {
-    private static readonly List<string> DefaultExclude = new()
-    {
+    private static readonly List<string> DefaultExclude =
+    [
         "ShadowPluginLoader.WinUI.dll",
         "ShadowPluginLoader.WinUI.xml",
         "ShadowPluginLoader.WinUI.pri",
         "ShadowPluginLoader.WinUI.pdb",
-        "Microsoft.Build.Utilities.dll",
-    };
+        "Microsoft.Build.Utilities.dll"
+    ];
 
     private static void Zip(string startPath, string zipPath)
     {
@@ -41,7 +41,7 @@ public static class PackageMethod
         }
         else
         {
-            Logger.Log($"Exclude Path: {excludePath} Not Found",LoggerLevel.Warning);            
+            Logger.Log($"Exclude Path: {excludePath} Not Found, Skip",LoggerLevel.Warning);            
         }
         var directoryInfo = new DirectoryInfo(startPath);
         foreach (var exclude in DefaultExclude.Where(exclude => !string.IsNullOrEmpty(exclude)))
@@ -61,6 +61,21 @@ public static class PackageMethod
             }
         }
 
+        CheckFolderEmpty(startPath);
         Zip(startPath, zipPath);
+    }
+    private static void CheckFolderEmpty(string path)
+    {
+        foreach (var dir in Directory.EnumerateDirectories(path))
+        {
+            if (!IsFolderEmpty(dir)) continue;
+            Logger.Log($"{dir}为空,删除");
+            Directory.Delete(dir,true);
+        }
+    }
+    private static bool IsFolderEmpty(string path)
+    {
+        if (Directory.EnumerateDirectories(path).Any(dir => !IsFolderEmpty(dir))) return false;
+        return !Directory.EnumerateFiles(path).Any();
     }
 }

@@ -9,11 +9,11 @@
     <ItemGroup>
         <AdditionalFiles Include="$(ProjectDir)plugin.d.json"/>
     </ItemGroup> 
-    <ItemGroup Condition="$(Configuration) == 'Debug'">
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' And $(BuiltIn)">
         <AdditionalFiles Include="$(ProjectDir)plugin.json" />
     </ItemGroup>
 
-    <ItemGroup Condition="$(Configuration) != 'Debug'">
+    <ItemGroup Condition="'$(Configuration)' != 'Debug' Or !$(BuiltIn)">
         <AdditionalFiles Include="$(ProjectDir)plugin.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->

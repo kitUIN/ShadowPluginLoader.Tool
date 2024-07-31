@@ -8,7 +8,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>1.0.8.2</Version>
+    <Version>1.0.8.4</Version>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
     <Authors>kitUIN</Authors>

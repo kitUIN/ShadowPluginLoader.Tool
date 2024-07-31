@@ -2,6 +2,8 @@
 
 ShadowPluginLoader.Tool 是一个用于 [ShadowPluginLoader.WinUI](https://github.com/kitUIN/ShadowPluginLoader.WinUI) 的工具类。
 
+  <img src="https://img.shields.io/nuget/v/ShadowPluginLoader.Tool?style=flat-square" alt="nuget">
+  
 提供构建方法:
 - 为自定义的`PluginLoader`导出`MetaData`为`plugin.d.json`
 - 为自定义的`PluginLoader`自动生成`props`文件

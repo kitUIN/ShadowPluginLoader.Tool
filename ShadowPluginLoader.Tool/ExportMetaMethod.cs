@@ -87,10 +87,6 @@ public static class ExportMetaMethod
                 {
                     prop["Regex"] = m.Regex;
                 }
-                if (m!.IsPluginPath)
-                {
-                    prop["IsPluginPath"] = m.IsPluginPath;
-                }
             }
             else
             {

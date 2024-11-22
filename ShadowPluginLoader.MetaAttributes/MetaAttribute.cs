@@ -30,9 +30,4 @@ public class MetaAttribute: Attribute
     /// </summary>
     public bool Nullable { get; init; } = false;
 
-    /// <summary>
-    /// Is PluginPath
-    /// </summary>
-    public bool IsPluginPath { get; init; } = false;
-
 }

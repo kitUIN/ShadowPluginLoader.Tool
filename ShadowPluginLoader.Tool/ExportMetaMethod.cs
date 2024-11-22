@@ -78,14 +78,18 @@ public static class ExportMetaMethod
             };
             if (m is not null)
             {
-                if (m.Nullable)
+                if (m!.Nullable)
                 {
                     prop["Nullable"] = m.Nullable;
                 }
-                if (m.Required) required.Add(property.Name);
+                if (m!.Required) required.Add(property.Name);
                 if (!string.IsNullOrEmpty(m?.Regex))
                 {
                     prop["Regex"] = m.Regex;
+                }
+                if (m!.IsPluginPath)
+                {
+                    prop["IsPluginPath"] = m.IsPluginPath;
                 }
             }
             else

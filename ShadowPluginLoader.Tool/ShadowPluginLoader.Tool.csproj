@@ -8,7 +8,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>1.1.0.3</Version>
+    <Version>1.2.0</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -33,7 +33,7 @@
     <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.0.3.0" />
+    <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\build\**"/>

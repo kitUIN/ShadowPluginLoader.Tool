@@ -13,8 +13,8 @@ public class MetaAttribute: Attribute
     /// <summary>
     /// Is Excluded
     /// </summary>
-    public bool Exclude { get; init; }
-    
+    public bool Exclude { get; init; } = false;
+
     /// <summary>
     /// Mapping Project PropertyGroup Value
     /// </summary>
@@ -28,5 +28,11 @@ public class MetaAttribute: Attribute
     /// <summary>
     /// Can Nullable
     /// </summary>
-    public bool Nullable { get; init; }
+    public bool Nullable { get; init; } = false;
+
+    /// <summary>
+    /// Is PluginPath
+    /// </summary>
+    public bool IsPluginPath { get; init; } = false;
+
 }

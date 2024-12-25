@@ -10,12 +10,12 @@ public class ShadowPluginSettingClassAttribute : Attribute
     /// <summary>
     /// Plugin Type
     /// </summary>
-    public string PluginType { get; init; }
+    public Type PluginType { get; }
 
     /// <summary>
-    /// Plugin Namespace
+    /// Accessor Alias Name
     /// </summary>
-    public string PluginNamespace { get; init; }
+    public string AccessorAlias { get; }
 
     /// <summary>
     /// An attribute used to mark a class as a plugin settings class for the Shadow Plugin Loader framework.
@@ -25,9 +25,9 @@ public class ShadowPluginSettingClassAttribute : Attribute
     /// The designated class using this attribute should be intended to manage settings specific
     /// to a plugin defined by the associated <see cref="PluginType"/>.
     /// </remarks>
-    public ShadowPluginSettingClassAttribute(string pluginType, string pluginNamespace)
+    public ShadowPluginSettingClassAttribute(Type pluginType, string accessorAlias = "Settings")
     {
         PluginType = pluginType;
-        PluginNamespace = pluginNamespace;
+        AccessorAlias = accessorAlias;
     }
 }

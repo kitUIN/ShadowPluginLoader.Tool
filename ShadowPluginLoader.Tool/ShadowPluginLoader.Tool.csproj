@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFrameworks>net6.0-windows;net7.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>1.3.1</Version>
+    <Version>1.3.3</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -28,10 +28,10 @@
     <None Include="..\README.md" Pack="True" PackagePath="\" />
     <None Include="Assets\build\**" Pack="True" PackagePath="build\" />
     <None Include="Assets\buildTransitive\**" Pack="True" PackagePath="buildTransitive\" />
-    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
+    <None Include="$(OutputPath)\**\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.2.2" />

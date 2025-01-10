@@ -21,9 +21,13 @@ public static class ReadMetaMethod
 
     private static void SavePluginJson(JsonObject jsonObject)
     {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+#if NET7_0
+        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
+#endif
         File.WriteAllText(
             Path.Combine(_projectPath, "plugin.json"),
-            jsonObject.ToJsonString(new JsonSerializerOptions { WriteIndented = true })
+            jsonObject.ToJsonString(options)
         );
         Logger.Log($"plugin.json -> {_projectPath}plugin.json", LoggerLevel.Success);
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization.Metadata;
 using ShadowPluginLoader.MetaAttributes;
 
 namespace ShadowPluginLoader.Tool;
@@ -100,15 +101,13 @@ public static class ExportMetaMethod
 
         root["Properties"] = props;
         root["Required"] = required;
-
+        var options = new JsonSerializerOptions { WriteIndented = true };
+#if NET7_0
+        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
+#endif
         File.WriteAllText(
             Path.Combine(_outputPath, "plugin.d.json"),
-            root.ToJsonString(
-                new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                }
-            )
+            root.ToJsonString(options)
         );
     }
 

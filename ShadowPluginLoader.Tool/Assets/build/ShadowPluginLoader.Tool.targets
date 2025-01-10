@@ -10,7 +10,8 @@
         <BuiltIn  Condition="$(BuiltIn) == ''">false</BuiltIn>
     </PropertyGroup>
     <PropertyGroup>
-        <ToolExeFile>$(MSBuildThisFileDirectory)ShadowPluginLoader.Tool.dll</ToolExeFile>
+        <ToolExeFile>$(MSBuildThisFileDirectory)net6.0-windows/ShadowPluginLoader.Tool.dll</ToolExeFile>
+        <ToolExeFile Condition="$(TargetFrameworkVersion) >= 'v7.0'">$(MSBuildThisFileDirectory)net7.0-windows/ShadowPluginLoader.Tool.dll</ToolExeFile>
         <OutputDir>$(ProjectDir)$(OutputPath)</OutputDir>
         <OutputFile>$(OutputDir)$(TargetName)$(TargetExt)</OutputFile>
     </PropertyGroup>

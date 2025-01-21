@@ -22,12 +22,19 @@ public class ShadowSettingAttribute : Attribute
     public string? Comment { get; }
 
     /// <summary>
+    /// Setting IsPath
+    /// </summary>
+    public bool IsPath { get; }
+
+    /// <summary>
     /// Represents an attribute used to configure and manage specific field settings.
     /// </summary>
-    public ShadowSettingAttribute(Type settingType, string? defaultVal = null, string? comment = null)
+    public ShadowSettingAttribute(Type settingType, string? defaultVal = null, string? comment = null,
+        bool isPath = false)
     {
         SettingType = settingType;
         Default = defaultVal;
         Comment = comment;
+        IsPath = isPath;
     }
 }

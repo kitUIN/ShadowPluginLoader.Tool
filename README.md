@@ -10,4 +10,3 @@ ShadowPluginLoader.Tool 是一个用于 [ShadowPluginLoader.WinUI](https://githu
 - 自动复制`plugin.d.json`到插件开发者的插件目录
 - 自动生成插件开发者的插件的`plugin.json`
 - 自动打包插件开发者的插件
-- 自动为插件开发者的插件创建设置项

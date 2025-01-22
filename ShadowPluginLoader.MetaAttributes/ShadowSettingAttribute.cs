@@ -27,14 +27,20 @@ public class ShadowSettingAttribute : Attribute
     public bool IsPath { get; }
 
     /// <summary>
+    /// Setting BaseFolder
+    /// </summary>
+    public SettingsBaseFolder BaseFolder { get; }
+
+    /// <summary>
     /// Represents an attribute used to configure and manage specific field settings.
     /// </summary>
-    public ShadowSettingAttribute(Type settingType, string? defaultVal = null, string? comment = null,
-        bool isPath = false)
+    public ShadowSettingAttribute(Type settingType, string? defaultVal = null,
+        string? comment = null, bool isPath = false, SettingsBaseFolder baseFolder = SettingsBaseFolder.LocalFolder)
     {
         SettingType = settingType;
         Default = defaultVal;
         Comment = comment;
         IsPath = isPath;
+        BaseFolder = baseFolder;
     }
 }

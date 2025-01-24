@@ -36,3 +36,6 @@ public class ExampleMetaData : AbstractPluginMetaData
 - ShadowSetting 设置项
 - ShadowPluginSettingClass 为插件主类添加Settings类
 
+## 自动装配DI
+
+- Autowired 自动将访问器加载到构造函数中

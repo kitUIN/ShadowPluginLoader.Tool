@@ -22,7 +22,6 @@
     <PackageOutputPath>..\..\NugetPackages</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RollForward>LatestMajor</RollForward>
-    <IncludeBuildOutput>true</IncludeBuildOutput>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

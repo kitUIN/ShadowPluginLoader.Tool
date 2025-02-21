@@ -1,6 +1,7 @@
 name: Publish Nuget Packages
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "*.*"
@@ -29,6 +30,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Create NugetPackages
         run: |
+          cd ..
           mkdir NugetPackages
           
       - name: Build Packages

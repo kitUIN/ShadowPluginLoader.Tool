@@ -25,7 +25,7 @@ jobs:
         with:
           dotnet-version: |
             6.0.x
-            8.0.x
+            7.0.x
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Create NugetPackages
@@ -36,7 +36,8 @@ jobs:
       - name: Build Packages
         run: |
           dotnet restore $env:Solution_Name/$env:Solution_Name.csproj
-          dotnet build $env:Solution_Name/$env:Solution_Name.csproj -p:Configuration=Release
+          dotnet build $env:Solution_Name/$env:Solution_Name.csproj -p:Configuration=Release --framework net7.0-windows
+          dotnet build $env:Solution_Name/$env:Solution_Name.csproj -p:Configuration=Release --framework net6.0-windows
 
       - name: Push package to Nuget registry
         run: |

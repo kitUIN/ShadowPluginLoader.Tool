@@ -8,7 +8,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>1.3.13</Version>
+    <Version>1.3.14</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -32,10 +32,10 @@
     <None Include="..\README.md" Pack="True" PackagePath="\" />
     <None Include="Assets\build\**" Pack="True" PackagePath="build\" />
     <None Include="Assets\buildTransitive\**" Pack="True" PackagePath="buildTransitive\" />
-    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\**\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
-    <None Include="$(OutputPath)\**\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
+    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.Tool.dll" Pack="True" PackagePath="build\" />
+    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.Tool.runtimeconfig.json" Pack="True" PackagePath="build\" />
+    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.Tool.deps.json" Pack="True" PackagePath="build\" />
+    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.MetaAttributes.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ShadowPluginLoader.MetaAttributes" Version="1.3.1" />

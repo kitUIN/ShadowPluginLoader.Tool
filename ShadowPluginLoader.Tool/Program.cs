@@ -71,7 +71,7 @@ internal class Program
         }
         catch (Exception exception)
         {
-            Logger.Log($"{exception.GetType().Name}: {exception.Message}", LoggerLevel.Error);
+            Logger.Error($"{exception.GetType().Name}: {exception.Message}, Stack Trace:\n{exception.StackTrace}");
             return -1;
         }
 

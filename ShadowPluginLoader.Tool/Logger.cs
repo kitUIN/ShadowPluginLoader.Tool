@@ -18,4 +18,8 @@ public static class Logger
     {
         Console.WriteLine($"[Build] | {level} | {message}");
     }
+    public static void Error(string message)
+    {
+        Console.Error.WriteLine($"[Build] | Error | {message}");
+    }
 }

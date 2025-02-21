@@ -35,6 +35,7 @@ jobs:
       - name: Build Packages
         run: |
           dotnet build -p:Configuration=Release
+          dotnet pack -p:Configuration=Release
 
       - name: Push package to Nuget registry
         run: |

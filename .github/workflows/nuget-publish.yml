@@ -8,7 +8,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+    env:
+      Solution_Name: ShadowPluginLoader.Tool
     steps:
       - uses: mickem/clean-after-action@v1
 
@@ -26,14 +27,17 @@ jobs:
             8.0.x
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
-
+      - name: Create NugetPackages
+        uses: |
+          mkdir NugetPackages
+          
       - name: Build Packages
         run: |
-          dotnet restore .\ShadowPluginLoader.Tool\ShadowPluginLoader.Tool.csproj
-          dotnet build -p:Configuration=Release .\ShadowPluginLoader.Tool\ShadowPluginLoader.Tool.csproj
+          dotnet restore $env:Solution_Name/$env:Solution_Name.csproj
+          dotnet build $env:Solution_Name/$env:Solution_Name.csproj -p:Configuration=Release
 
       - name: Push package to Nuget registry
         run: |
-          dotnet nuget push "..\NugetPackages\ShadowPluginLoader.Tool.*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY 
+          dotnet nuget push "NugetPackages\*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY 
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}

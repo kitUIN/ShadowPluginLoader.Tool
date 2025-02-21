@@ -35,11 +35,11 @@ jobs:
       - name: Build Packages
         run: |
           dotnet build -p:Configuration=Release
-          cd ..\NugetPackages
-          ls 
 
       - name: Push package to Nuget registry
         run: |
-          dotnet nuget push "..\NugetPackages\$env:Solution_Name.*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY 
+          cd ..\NugetPackages
+          ls
+          dotnet nuget push "$env:Solution_Name.*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY 
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}

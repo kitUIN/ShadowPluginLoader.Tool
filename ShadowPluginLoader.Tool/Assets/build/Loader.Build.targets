@@ -1,5 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
+        <PlatformTarget>AnyCPU</PlatformTarget>
         <LoaderPropsFile Condition="$(LoaderPropsFile) == ''">$(ProjectDir)Loaders.Build.props</LoaderPropsFile>
         <LoaderPropsFile Condition="!Exists('$(LoaderPropsFile)')">$(MSBuildThisFileDirectory)Loaders.Build.props</LoaderPropsFile>
     </PropertyGroup>

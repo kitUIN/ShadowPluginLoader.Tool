@@ -34,6 +34,26 @@ public class ShadowSettingAttribute : Attribute
     /// <summary>
     /// Represents an attribute used to configure and manage specific field settings.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// [ShadowPluginSettingClass(typeof(EmojiPlugin), "Setting")]
+    /// [ShadowSettingClass("ShadowExample.Plugin.Emoji","EmojiSetting")]
+    /// public enum BikaConfigKey
+    /// {
+    ///     [ShadowSetting(typeof(int), "1", "Api分流")]
+    ///     ApiShunt,
+    ///
+    ///     [ShadowSetting(typeof(bool), "true", "登陆后记住我")]
+    ///     RememberMe,
+    ///
+    ///     [ShadowSetting(typeof(string), "tt",comment: "测试名称")]
+    ///     TestName,
+    ///
+    ///     [ShadowSetting(typeof(string), "Temp",  "测试名称", true)]
+    ///     TempPath,
+    /// }
+    /// </code>
+    /// </example>
     public ShadowSettingAttribute(Type settingType, string? defaultVal = null,
         string? comment = null, bool isPath = false, SettingsBaseFolder baseFolder = SettingsBaseFolder.LocalFolder)
     {

@@ -5,8 +5,6 @@
         <IsPluginLoader>false</IsPluginLoader>
         <!-- Whether the current project is a Plugin -->
         <IsPlugin>false</IsPlugin>
-        <!-- Whether the current project is a built-in Plugin -->
-        <BuiltIn>false</BuiltIn>
         <!-- Auto Pack Plugin When IsPlugin == True-->
         <AutoPluginPackage>true</AutoPluginPackage>
         <!-- Auto Generate I18N -->

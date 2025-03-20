@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization.Metadata;
 using ShadowPluginLoader.MetaAttributes;
 
 namespace ShadowPluginLoader.Tool;
@@ -14,93 +12,16 @@ public static class ExportMetaMethod
 {
     private static string _outputPath = "";
 
-    private static readonly List<Type> Types = new()
-    {
-        typeof(string),typeof(bool),typeof(int),typeof(float),typeof(double),typeof(long),typeof(short), typeof(decimal),
-        typeof(uint),typeof(ushort),typeof(ulong),
-        typeof(bool?),typeof(int?),typeof(float?),typeof(double?),typeof(long?),typeof(short?), typeof(decimal?),
-        typeof(uint?),typeof(ushort?),typeof(ulong?),
-        typeof(string[]),typeof(bool[]),typeof(int[]),typeof(float[]),typeof(double[]),typeof(long[]),typeof(short[]), typeof(decimal[]),
-        typeof(uint[]),typeof(ushort[]),typeof(ulong[])
-    };
-    private static readonly List<string> TypeNames = new()
-    {
-        "string","bool","int","float","double","long","short","decimal",
-        "unit","ushort","ulong",
-        "bool?","int?","float?","double?","long?","short?","decimal?",
-        "unit?","ushort?","ulong?",
-        "string[]","bool[]","int[]","float[]","double[]","long[]","short[]","decimal[]",
-        "unit[]","ushort[]","ulong[]",
-    };
-    
-    private static string? CheckExportPropertyType(PropertyInfo property)
-    {
-        if (property.Name == "TypeId")
-        {
-            // Logger.Log("Not Support Property Name: TypeId", LoggerLevel.Warning);
-            return null;
-        }
-
-        for (var i = 0; i < Types.Count; i++)
-        {
-            if (Types[i] == property.PropertyType)
-            {
-                return TypeNames[i];
-            }
-        }
-        Logger.Log($"{property.Name}: Not Support {property.PropertyType.FullName} Type",
-            LoggerLevel.Warning);
-        return null;
-    }
 
     private static void WriteDefineFile(Type type)
     {
-        JsonNode root = new JsonObject()
+        JsonNode root = new JsonObject
         {
-            ["Namespace"] = type.Namespace,
-            ["Type"] = type.Name,
+            ["MetaDataType"] = type.FullName,
         };
-        var properties = type.GetProperties();
-        var props = new JsonObject();
-        var required = new JsonArray();
-
-        foreach (var property in properties)
-        {
-            var typeName = CheckExportPropertyType(property);
-            if (typeName is null) continue;
-            var m = property.GetCustomAttribute<MetaAttribute>();
-            if (m is { Exclude: true }) continue;
-            var prop = new JsonObject
-            {
-                ["Type"] = typeName,
-                ["PropertyGroupName"] = string.IsNullOrEmpty(m?.PropertyGroupName)
-                    ? property.Name
-                    : m.PropertyGroupName
-            };
-            if (m is not null)
-            {
-                if (m!.Nullable)
-                {
-                    prop["Nullable"] = m.Nullable;
-                }
-                if (m!.Required) required.Add(property.Name);
-                if (!string.IsNullOrEmpty(m?.Regex))
-                {
-                    prop["Regex"] = m.Regex;
-                }
-            }
-            else
-            {
-                if(typeName.EndsWith("?")) prop["Nullable"] = true;
-                required.Add(property.Name);
-            }
-
-            Logger.Log($"{property.Name}: {typeName} -> plugin.d.json");
-            props[property.Name] = prop;
-        }
+        var props = Properties2JsonObject(type);
 
         root["Properties"] = props;
-        root["Required"] = required;
         var options = new JsonSerializerOptions { WriteIndented = true };
 #if NET7_0
         options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
@@ -109,6 +30,48 @@ public static class ExportMetaMethod
             Path.Combine(_outputPath, "plugin.d.json"),
             root.ToJsonString(options)
         );
+    }
+
+    private static JsonObject Properties2JsonObject(Type type, string prefix = "")
+    {
+        var properties = type.GetProperties();
+        var props = new JsonObject();
+        foreach (var property in properties)
+        {
+            var typeName = property.PropertyType.FullName;
+            // 忽略TypeId
+            if (property.Name == "TypeId" && typeName == "System.Object") continue;
+            if (typeName is null) continue;
+            var m = property.GetCustomAttribute<MetaAttribute>();
+            var isNullable = property.CustomAttributes
+                .Any(attr => attr.AttributeType.Name == "NullableAttribute");
+            if (m is { Exclude: true }) continue;
+            var prop = new JsonObject
+            {
+                ["Type"] = typeName,
+                ["Nullable"] = isNullable,
+                ["Required"] = m?.Required ?? true,
+                ["PropertyGroupName"] = string.IsNullOrEmpty(m?.PropertyGroupName)
+                    ? property.Name
+                    : m.PropertyGroupName
+            };
+            if (!ReadMetaMethod.SupportType.Contains(typeName))
+            {
+                var t = typeName.EndsWith("[]") ? property.PropertyType.GetElementType() : property.PropertyType;
+                if (t != null)
+                    prop["Properties"] = Properties2JsonObject(t, prefix + prop["PropertyGroupName"] + ".");
+            }
+
+            if (m is not null && !string.IsNullOrEmpty(m.Regex))
+            {
+                prop["Regex"] = m.Regex;
+            }
+
+            Logger.Log($"{prefix}{property.Name}: {typeName}" + (isNullable ? "?" : "") + " -> plugin.d.json");
+            props[property.Name] = prop;
+        }
+
+        return props;
     }
 
     public static void ExportMeta(Assembly asm, string outputPath)

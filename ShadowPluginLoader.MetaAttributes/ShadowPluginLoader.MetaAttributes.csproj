@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Nuget -->
-        <Version>1.4.4</Version>
+        <Version>1.4.5</Version>
         <PackageId>ShadowPluginLoader.MetaAttributes</PackageId>
         <Authors>kitUIN</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,7 +14,7 @@
         <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</PackageProjectUrl>
         <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</RepositoryUrl>
         <Description>✨ ShadowPluginLoader MetaAttributes✨</Description>
-        <Copyright>Copyright 2024</Copyright>
+        <Copyright>Copyright 2024-2025</Copyright>
         <PackageTags>kitUIN;plugin-loader;plugin;extension;attribute</PackageTags>
         <PackageOutputPath>..\..\NugetPackages</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>

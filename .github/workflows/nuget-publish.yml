@@ -34,9 +34,11 @@ jobs:
           
       - name: Build Packages
         run: |
-          dotnet build -p:Configuration=Release
-          dotnet pack -p:Configuration=Release
-
+          dotnet build ShadowPluginLoader.Attributes/ShadowPluginLoader.Attributes.csproj -p:Configuration=Release
+          dotnet pack ShadowPluginLoader.Attributes/ShadowPluginLoader.Attributes.csproj -p:Configuration=Release
+          dotnet build ShadowPluginLoader.Tool/ShadowPluginLoader.Tool.csproj -p:Configuration=Release
+          dotnet pack ShadowPluginLoader.Tool/ShadowPluginLoader.Tool.csproj -p:Configuration=Release
+      
       - name: Push package to Nuget registry
         run: |
           cd ..\NugetPackages

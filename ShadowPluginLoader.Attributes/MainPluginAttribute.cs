@@ -6,7 +6,12 @@
 public class MainPluginAttribute : EntryPointAttribute
 {
     /// <summary>
-    /// 
+    /// Name
     /// </summary>
     public override string Name => "MainPlugin";
+    
+    /// <summary>
+    /// Is BuiltIn Plugin
+    /// </summary>
+    public bool BuiltIn { get; init; }
 }

@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.MetaAttributes;
+﻿namespace ShadowPluginLoader.Attributes;
 
 /// <summary>
 /// This attribute is intended to provide settings for configuration and management

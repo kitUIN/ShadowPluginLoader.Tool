@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.MetaAttributes;
+﻿namespace ShadowPluginLoader.Attributes;
 
 /// <summary>
 /// Entry Point

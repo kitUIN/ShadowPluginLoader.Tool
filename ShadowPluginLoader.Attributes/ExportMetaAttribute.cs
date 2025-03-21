@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.MetaAttributes;
+﻿namespace ShadowPluginLoader.Attributes;
 /// <summary>
 /// Used to identify this class as an exported class
 /// </summary>

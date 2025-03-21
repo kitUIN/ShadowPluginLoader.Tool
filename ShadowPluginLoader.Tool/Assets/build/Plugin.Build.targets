@@ -35,4 +35,8 @@
         <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration) $(DefaultExclude)"
               ConsoleToMSBuild="True"/>
     </Target>
+    <Target Name="PatchPlugin" BeforeTargets="PackagePlugin" >
+        <Exec Command="dotnet $(ToolExeFile) 3 $(ProjectDir) $(OutputFile)"
+              ConsoleToMSBuild="True"/>
+    </Target>
 </Project>

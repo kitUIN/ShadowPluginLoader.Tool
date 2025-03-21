@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace ShadowPluginLoader.Tool;
@@ -8,12 +9,15 @@ internal class Program
 {
     // public static string DirPath = Environment.CurrentDirectory;
     private static readonly string[] ArgNames0 = ["Method", "ExportMetaFile", "OutputPath"];
-    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath" ,"PluginMeta", "DllName"];
+    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath", "PluginMeta", "DllName"];
+    private static readonly string[] ArgNames3 = ["Method", "ProjectPath", "PluginFile"];
+
     private static readonly string[] ArgNames2 =
     [
         "Method", "OutputPath", "ExcludesFile",
-        "zipPath","zipName","zipExt","Configuration", "defaultExclude"
+        "zipPath", "zipName", "zipExt", "Configuration", "defaultExclude"
     ];
+
     private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
     {
         Logger.Log("Start! Args:", LoggerLevel.Success);
@@ -48,8 +52,9 @@ internal class Program
                     {
                         throw new Exception("Missing <PluginMeta> in <PropertyGroup>(.csproj)");
                     }
+
                     var dllName = args[4]; // DllName
-                    ReadMetaMethod.Read(projectPath, csproj, pluginMeta,dllName);
+                    ReadMetaMethod.Read(projectPath, csproj, pluginMeta, dllName);
                     break;
                 }
                 case "2":
@@ -62,9 +67,21 @@ internal class Program
                     var zipExt = args[5]; // zipExt
                     var configuration = args[6]; // Configuration
                     var defaultExclude = Convert.ToBoolean(args[7]);
-                    PackageMethod.Exclude(outputPath,excludesFile, 
-                        zipPath, zipName,zipExt,configuration,
+                    PackageMethod.Exclude(outputPath, excludesFile,
+                        zipPath, zipName, zipExt, configuration,
                         defaultExclude);
+                    break;
+                }
+                case "3":
+                {
+                    ShowArgs(args, ArgNames3);
+                    var projectPath = args[1]; // projectPath
+                    var pluginFile = args[2]; // pluginFile
+                    var pluginsJsonFile = Path.Combine(projectPath, "Assets", "plugin.json");
+
+                    var outPath = Path.Combine(Path.GetDirectoryName(pluginFile)!,
+                        Path.GetFileNameWithoutExtension(pluginFile), "Assets", "plugin.json");
+                    EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(pluginFile), pluginsJsonFile, outPath);
                     break;
                 }
             }
@@ -77,6 +94,4 @@ internal class Program
 
         return 0;
     }
-
-    
 }

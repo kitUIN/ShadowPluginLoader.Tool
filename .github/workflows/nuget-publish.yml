@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: |
-            8.0.x
+            9.0.x
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Create NugetPackages
@@ -41,6 +41,6 @@ jobs:
         run: |
           cd ..\NugetPackages
           ls
-          dotnet nuget push "$env:Solution_Name.*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY 
+          dotnet nuget push "*.nupkg" -s "https://api.nuget.org/v3/index.json" -k $env:NUGET_KEY --skip-duplicate        
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}

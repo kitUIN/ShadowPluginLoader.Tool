@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.MetaAttributes;
+﻿namespace ShadowPluginLoader.Attributes;
 /// <summary>
 /// Used to mark a property as a meta attribute.
 /// </summary>

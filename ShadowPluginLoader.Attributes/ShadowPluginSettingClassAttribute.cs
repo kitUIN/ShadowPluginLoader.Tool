@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.MetaAttributes;
+﻿namespace ShadowPluginLoader.Attributes;
 
 /// <summary>
 /// An attribute used to designate a class as a plugin setting class in the Shadow Plugin Loader framework.

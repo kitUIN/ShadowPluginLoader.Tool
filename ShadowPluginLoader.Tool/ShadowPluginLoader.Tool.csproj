@@ -7,12 +7,11 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>2.0.6</Version>
+    <Version>2.0.7</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
     <Authors>kitUIN</Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</RepositoryUrl>

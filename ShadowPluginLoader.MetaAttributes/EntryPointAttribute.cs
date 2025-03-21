@@ -1,12 +1,13 @@
 ﻿namespace ShadowPluginLoader.MetaAttributes;
+
 /// <summary>
-/// Plugin Main Class
+/// Entry Point
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class MainPluginAttribute : EntryPointAttribute
+public class EntryPointAttribute : Attribute
 {
     /// <summary>
-    /// 
+    /// Entry Point Name
     /// </summary>
-    public override string Name => "MainPlugin";
+    public virtual string Name { get; init; } = null!;
 }

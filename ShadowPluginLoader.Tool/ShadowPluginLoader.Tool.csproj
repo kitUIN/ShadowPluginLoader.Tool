@@ -12,7 +12,7 @@
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
     <Authors>kitUIN</Authors>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</RepositoryUrl>

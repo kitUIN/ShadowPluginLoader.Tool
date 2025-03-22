@@ -6,3 +6,5 @@ ShadowPluginLoader.Tool/obj/
 ShadowPluginLoader.Tool/bin/
 ShadowPluginLoader.Attributes/obj/
 ShadowPluginLoader.Attributes/bin/
+ShadowPluginLoader.VersionGen/bin/
+ShadowPluginLoader.VersionGen/obj/

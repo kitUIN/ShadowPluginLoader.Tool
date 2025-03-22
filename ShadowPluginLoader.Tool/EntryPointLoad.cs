@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,6 +63,12 @@ public static class EntryPointLoad
         }
 
         jsonObject["EntryPoints"] = entryPoints;
+        var outDir = Path.GetDirectoryName(outPath);
+        if (outDir != null && !Directory.Exists(outDir))
+        {
+            Directory.CreateDirectory(outDir);
+        }
+
         var options = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,

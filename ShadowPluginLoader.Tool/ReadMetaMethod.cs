@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -46,7 +46,7 @@ public static class ReadMetaMethod
 #if NET7_0
         options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
 #endif
-        var path = Path.Combine(_projectPath, "Assets", "plugin.json");
+        var path = Path.Combine(_projectPath, "plugin.json");
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path,
             jsonObject.ToJsonString(options)

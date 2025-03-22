@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -77,7 +77,7 @@ internal class Program
                     ShowArgs(args, ArgNames3);
                     var projectPath = args[1]; // projectPath
                     var pluginFile = args[2]; // pluginFile
-                    var pluginsJsonFile = Path.Combine(projectPath, "Assets", "plugin.json");
+                    var pluginsJsonFile = Path.Combine(projectPath,  "plugin.json");
 
                     var outPath = Path.Combine(Path.GetDirectoryName(pluginFile)!,
                         Path.GetFileNameWithoutExtension(pluginFile), "Assets", "plugin.json");

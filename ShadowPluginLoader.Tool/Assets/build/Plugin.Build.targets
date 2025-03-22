@@ -1,9 +1,9 @@
-﻿<Project>
+<Project>
     <PropertyGroup>
         <!-- Exclude File -->
         <ExcludeFile Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
         <ExcludeFile Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
-    </PropertyGroup>
+	</PropertyGroup>
     <Import Project="$(ProjectDir)Plugin.Build.props" Condition="Exists('$(ProjectDir)Plugin.Build.props')"/>
     <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>

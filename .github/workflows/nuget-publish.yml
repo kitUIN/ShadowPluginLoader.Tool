@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path:  ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ Solution_Name }}
+          key: ${{ runner.os }}-nuget-ShadowPluginLoader.Tool
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.dotnet
-          key: ${{ runner.os }}-dotnet-${{ Solution_Name }}
+          key: ${{ runner.os }}-dotnet-ShadowPluginLoader.Tool
           restore-keys: |
             ${{ runner.os }}-dotnet-
 

@@ -12,21 +12,39 @@ jobs:
     env:
       Solution_Name: ShadowPluginLoader.Tool
     steps:
-      - uses: mickem/clean-after-action@v1
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
           submodules: recursive
           fetch-depth: 0
 
+      # 缓存 NuGet 包
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path:  ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ Solution_Name }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # 缓存 .NET SDK
+      - name: Cache .NET SDK
+        uses: actions/cache@v3
+        with:
+          path: ~/.dotnet
+          key: ${{ runner.os }}-dotnet-${{ Solution_Name }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
       - name: Install .NET
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: |
             9.0.x
+
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
+        
       - name: Create NugetPackages
         run: |
           cd ..

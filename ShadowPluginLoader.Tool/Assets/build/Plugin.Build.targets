@@ -3,13 +3,29 @@
         <!-- Exclude File -->
         <ExcludeFile Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
         <ExcludeFile Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
+        <TargetFrameworkWithoutTrailingZero>$([System.String]::Copy('$(TargetFramework)').TrimEnd('.0'))</TargetFrameworkWithoutTrailingZero>
 	</PropertyGroup>
     <Import Project="$(ProjectDir)Plugin.Build.props" Condition="Exists('$(ProjectDir)Plugin.Build.props')"/>
     <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>
         <AdditionalFiles Include="$(ProjectDir)plugin.d.json"/>
     </ItemGroup>
-
+    <!-- nuget -->
+    <ItemGroup>
+        <None Include="$(OutputPath)\$(PackageId)\**\*.*" Pack="true" PackagePath="lib\$(TargetFrameworkWithoutTrailingZero)\$(PackageId)" />
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="build\$(PackageId).props" />
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" />
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="build\$(PackageId).targets" />
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" />
+        <None Include="$(OutputPath)\$(PackageId)\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)" />
+    </ItemGroup>
+    <!-- Project Referer -->
+    <ItemGroup>
+        <None Include="$(OutputPath)\$(PackageId)\Assets\plugin.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <TargetPath>$(PackageId)\Assets\plugin.json</TargetPath>
+        </None>
+    </ItemGroup>
     <ItemGroup>
         <AdditionalFiles Include="$(ProjectDir)plugin.json"/>
     </ItemGroup>

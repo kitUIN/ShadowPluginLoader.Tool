@@ -22,19 +22,12 @@ jobs:
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
-          path:  ~/.nuget/packages
+          path: |
+            ~/.dotnet
+            ~/.nuget/packages
           key: ${{ runner.os }}-nuget-ShadowPluginLoader.Tool
           restore-keys: |
             ${{ runner.os }}-nuget-
-
-      # 缓存 .NET SDK
-      - name: Cache .NET SDK
-        uses: actions/cache@v3
-        with:
-          path: ~/.dotnet
-          key: ${{ runner.os }}-dotnet-ShadowPluginLoader.Tool
-          restore-keys: |
-            ${{ runner.os }}-dotnet-
 
       - name: Install .NET
         uses: actions/setup-dotnet@v1

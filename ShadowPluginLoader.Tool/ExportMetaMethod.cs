@@ -62,9 +62,10 @@ public static class ExportMetaMethod
                     prop["Properties"] = Properties2JsonObject(t, prefix + prop["PropertyGroupName"] + ".");
             }
 
-            if (m is not null && !string.IsNullOrEmpty(m.Regex))
+            if (m is not null)
             {
-                prop["Regex"] = m.Regex;
+                if(!string.IsNullOrEmpty(m.Regex)) prop["Regex"] = m.Regex;
+                if(!string.IsNullOrEmpty(m.EntryPointName)) prop["EntryPointName"] = m.EntryPointName;
             }
 
             Logger.Log($"{prefix}{property.Name}: {typeName}" + (isNullable ? "?" : "") + " -> plugin.d.json");

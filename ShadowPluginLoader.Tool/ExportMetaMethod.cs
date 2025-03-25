@@ -17,7 +17,7 @@ public static class ExportMetaMethod
     {
         JsonNode root = new JsonObject
         {
-            ["MetaDataType"] = type.FullName,
+            ["Type"] = type.FullName,
         };
         var props = Properties2JsonObject(type);
 

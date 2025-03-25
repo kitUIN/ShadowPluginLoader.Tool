@@ -24,5 +24,9 @@ public class MetaAttribute: Attribute
     /// Using Regex To Validate
     /// </summary>
     public string? Regex { get; init; }
-
+    
+    /// <summary>
+    /// EntryPoint Name
+    /// </summary>
+    public string? EntryPointName { get; init; }
 }

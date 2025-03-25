@@ -1,6 +1,6 @@
 using Microsoft.Build.Framework;
 
-namespace ShadowViewer.VersionGen;
+namespace ShadowPluginLoader.VersionGen;
 
 /// <summary>
 /// 
@@ -28,15 +28,8 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
         try
         {
             var buildNumber = 0;
-            if (Path.GetDirectoryName(BuildNumberFile) is { } s)
-            {
-                Directory.CreateDirectory(s);
-            }
-
-            if (Path.GetDirectoryName(BuildDateFile) is { } ds)
-            {
-                Directory.CreateDirectory(ds);
-            }
+            if (Path.GetDirectoryName(BuildNumberFile) is { } s)Directory.CreateDirectory(s);
+            if (Path.GetDirectoryName(BuildDateFile) is { } ds)Directory.CreateDirectory(ds);
 
             if (File.Exists(BuildNumberFile))
             {
@@ -46,13 +39,18 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
 
             buildNumber++;
 
-            var buildDate = DateTime.UtcNow;
+            var buildDate = DateTime.Now;
             if (File.Exists(BuildDateFile))
             {
                 var content = File.ReadAllText(BuildDateFile).Trim();
-                buildDate = DateTime.TryParse(content, out buildDate) ? buildDate : DateTime.UtcNow;
+                buildDate = DateTime.TryParse(content, out buildDate) ? buildDate : DateTime.Now;
             }
 
+            if (!buildDate.Equals(DateTime.Now))
+            {
+                buildDate = DateTime.Now;
+                buildNumber = 1;
+            }
             var date = buildDate.ToString("yyyy.MM.dd");
             File.WriteAllText(BuildNumberFile, buildNumber.ToString());
             File.WriteAllText(BuildDateFile, date);

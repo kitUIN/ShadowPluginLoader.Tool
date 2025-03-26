@@ -26,6 +26,12 @@ public static class ReadMetaMethod
         "System.Double", "System.Double[]",
         "System.Decimal", "System.Decimal[]",
         "System.String", "System.String[]",
+        "System.Type", "System.Type[]",
+        "System.DateTime", "System.DateTime[]",
+        "System.DateTimeOffset", "System.DateTimeOffset[]",
+        "System.TimeSpan", "System.TimeSpan[]",
+        "System.Guid", "System.Guid[]",
+        "System.Byte", "System.Byte[]",
     ];
 
     private static JsonNode GetDefineJson()
@@ -100,8 +106,7 @@ public static class ReadMetaMethod
             "System.Single" => JsonValue.Create(Convert.ToSingle(value)),
             "System.Double" => JsonValue.Create(Convert.ToDouble(value)),
             "System.Decimal" => JsonValue.Create(Convert.ToDecimal(value)),
-            "System.String" => JsonValue.Create(value),
-            _ => throw new Exception($"Not Support Type: {type}")
+            _ => JsonValue.Create(value),
         };
     }
 
@@ -157,7 +162,7 @@ public static class ReadMetaMethod
         }
         else
         {
-            if (!SupportType.Contains(type))
+            if (!type.StartsWith("System."))
             {
                 var propertyJson = new JsonObject();
                 var properties = current["Properties"];

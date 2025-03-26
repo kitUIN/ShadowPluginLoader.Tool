@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,11 @@ public static class ExportMetaMethod
 {
     private static string _outputPath = "";
 
+    private static Dictionary<string, string> Regexs { get; } = new()
+    {
+        ["System.TimeSpan"] = @"^(\d\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.\d{1,7})?$",
+        ["System.Guid"] = @"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+    };
 
     private static void WriteDefineFile(Type type)
     {
@@ -41,10 +47,17 @@ public static class ExportMetaMethod
             var typeName = property.PropertyType.FullName;
             // 忽略TypeId
             if (property.Name == "TypeId" && typeName == "System.Object") continue;
-            if (typeName is null) continue;
-            var m = property.GetCustomAttribute<MetaAttribute>();
             var isNullable = property.CustomAttributes
                 .Any(attr => attr.AttributeType.Name == "NullableAttribute");
+            var nullType = Nullable.GetUnderlyingType(property.PropertyType);
+            if (nullType != null)
+            {
+                typeName = nullType.FullName;
+                isNullable = true;
+            }
+
+            if (typeName is null) continue;
+            var m = property.GetCustomAttribute<MetaAttribute>();
             if (m is { Exclude: true }) continue;
             var prop = new JsonObject
             {
@@ -62,10 +75,22 @@ public static class ExportMetaMethod
                     prop["Properties"] = Properties2JsonObject(t, prefix + prop["PropertyGroupName"] + ".");
             }
 
+            if (typeName is "System.DateTimeOffset" or "System.DateTime" &&
+                property.GetCustomAttribute<MetaDateTimeAttribute>() is { } dateTimeAttr &&
+                (dateTimeAttr.Format != null || !dateTimeAttr.InvariantCulture))
+            {
+                prop["DateTime"] = new JsonObject()
+                {
+                    ["Format"] = dateTimeAttr.Format,
+                    ["InvariantCulture"] = dateTimeAttr.InvariantCulture
+                };
+            }
+
             if (m is not null)
             {
-                if(!string.IsNullOrEmpty(m.Regex)) prop["Regex"] = m.Regex;
-                if(!string.IsNullOrEmpty(m.EntryPointName)) prop["EntryPointName"] = m.EntryPointName;
+                if (!string.IsNullOrEmpty(m.Regex)) prop["Regex"] = m.Regex;
+                else if(Regexs.TryGetValue(typeName, out var value)) prop["Regex"] = value;
+                if (!string.IsNullOrEmpty(m.EntryPointName)) prop["EntryPointName"] = m.EntryPointName;
             }
 
             Logger.Log($"{prefix}{property.Name}: {typeName}" + (isNullable ? "?" : "") + " -> plugin.d.json");

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowPluginLoader.Attribut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShadowPluginLoader.VersionGen", "ShadowPluginLoader.VersionGen\ShadowPluginLoader.VersionGen.csproj", "{D94588BC-8B75-4C48-95D6-CA801DDC3C8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject1", "TestProject1\TestProject1.csproj", "{FF525554-F59A-45FF-A3FA-CDF0CA228EA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D94588BC-8B75-4C48-95D6-CA801DDC3C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D94588BC-8B75-4C48-95D6-CA801DDC3C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D94588BC-8B75-4C48-95D6-CA801DDC3C8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF525554-F59A-45FF-A3FA-CDF0CA228EA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF525554-F59A-45FF-A3FA-CDF0CA228EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF525554-F59A-45FF-A3FA-CDF0CA228EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF525554-F59A-45FF-A3FA-CDF0CA228EA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

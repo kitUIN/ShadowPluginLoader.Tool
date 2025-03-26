@@ -26,6 +26,8 @@ public static class ReadMetaMethod
         "System.Double", "System.Double[]",
         "System.Decimal", "System.Decimal[]",
         "System.String", "System.String[]",
+        "System.Char", "System.Char[]",
+        "System.SByte", "System.SByte[]",
         "System.Type", "System.Type[]",
         "System.DateTime", "System.DateTime[]",
         "System.DateTimeOffset", "System.DateTimeOffset[]",

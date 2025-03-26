@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
 
@@ -39,7 +41,15 @@ internal class Program
                     ShowArgs(args, ArgNames0);
                     var exportMetaFile = args[1]; // ExportMetaFile
                     var outputPath = args[2]; // OutputPath
-                    ExportMetaMethod.ExportMeta(Assembly.LoadFrom(exportMetaFile), outputPath);
+                    var type = Assembly.LoadFrom(exportMetaFile).GetExportedTypes()
+                        .FirstOrDefault(
+                            x => x.GetCustomAttributes()
+                                .Any(y => y is ExportMetaAttribute));
+                    if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
+                    var content = ExportMetaMethod.ExportMeta(type);
+                    var path = Path.Combine(outputPath, "plugin.d.json");
+                    File.WriteAllText(path, content);
+                    Logger.Log($"plugin.d.json -> {path}", LoggerLevel.Success);
                     break;
                 }
                 case "1":
@@ -77,7 +87,7 @@ internal class Program
                     ShowArgs(args, ArgNames3);
                     var projectPath = args[1]; // projectPath
                     var pluginFile = args[2]; // pluginFile
-                    var pluginsJsonFile = Path.Combine(projectPath,  "plugin.json");
+                    var pluginsJsonFile = Path.Combine(projectPath, "plugin.json");
 
                     var outPath = Path.Combine(Path.GetDirectoryName(pluginFile)!,
                         Path.GetFileNameWithoutExtension(pluginFile), "Assets", "plugin.json");

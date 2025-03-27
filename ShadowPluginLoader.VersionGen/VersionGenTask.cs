@@ -49,7 +49,7 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
                 buildDate = DateTime.TryParse(content, out buildDate) ? buildDate : DateTime.Now;
             }
 
-            if (Configuration == "Debug")
+            if (Configuration != "Debug")
             {
                 NewBuildVersion = $"{buildDate:yyyy.MM.dd}.{buildNumber}";
                 return true;

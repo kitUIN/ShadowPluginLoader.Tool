@@ -16,6 +16,10 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
     /// 
     /// </summary>
     public string BuildDateFile { get; set; } = null!;
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Configuration { get; set; } = null!;
 
     /// <summary>
     /// 
@@ -37,7 +41,6 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
                 buildNumber = int.TryParse(content, out buildNumber) ? buildNumber : 0;
             }
 
-            buildNumber++;
 
             var buildDate = DateTime.Now;
             if (File.Exists(BuildDateFile))
@@ -46,12 +49,18 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
                 buildDate = DateTime.TryParse(content, out buildDate) ? buildDate : DateTime.Now;
             }
 
+            if (Configuration == "Debug")
+            {
+                NewBuildVersion = $"{buildDate:yyyy.MM.dd}.{buildNumber}";
+                return true;
+            }
             if (!buildDate.Equals(DateTime.Now.Date))
             {
                 buildDate = DateTime.Now;
-                buildNumber = 1;
+                buildNumber = 0;
             }
             var date = buildDate.ToString("yyyy.MM.dd");
+            buildNumber++;
             File.WriteAllText(BuildNumberFile, buildNumber.ToString());
             File.WriteAllText(BuildDateFile, date);
             NewBuildVersion = $"{date}.{buildNumber}";

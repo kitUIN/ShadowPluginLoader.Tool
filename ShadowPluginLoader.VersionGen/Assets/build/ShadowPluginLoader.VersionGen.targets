@@ -2,13 +2,14 @@
 	<!-- 自动生成版本号 -->
 	<UsingTask TaskName="VersionGenTask" AssemblyFile="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\ShadowPluginLoader.VersionGen.dll" />
 
-	<Target Name="GenerateBuildVersion" BeforeTargets="BeforeBuild">
+	<Target 
+			Name="GenerateBuildVersion" BeforeTargets="BeforeBuild">
 		<PropertyGroup>
 			<BuildNumberFile>.version\number.txt</BuildNumberFile>
 			<BuildDateFile>.version\date.txt</BuildDateFile>
 		</PropertyGroup>
 
-		<VersionGenTask BuildNumberFile="$(BuildNumberFile)" BuildDateFile="$(BuildDateFile)">
+		<VersionGenTask Configuration="$(Configuration)" BuildNumberFile="$(BuildNumberFile)" BuildDateFile="$(BuildDateFile)">
 			<Output TaskParameter="NewBuildVersion" PropertyName="NewBuildVersion" />
 		</VersionGenTask>
 

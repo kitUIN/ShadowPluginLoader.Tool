@@ -46,7 +46,7 @@ public class VersionGenTask : Microsoft.Build.Utilities.Task
                 buildDate = DateTime.TryParse(content, out buildDate) ? buildDate : DateTime.Now;
             }
 
-            if (!buildDate.Equals(DateTime.Now))
+            if (!buildDate.Equals(DateTime.Now.Date))
             {
                 buildDate = DateTime.Now;
                 buildNumber = 1;

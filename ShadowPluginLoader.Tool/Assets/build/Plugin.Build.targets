@@ -17,7 +17,8 @@
         <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" />
         <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="build\$(PackageId).targets" />
         <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" />
-        <None Include="$(OutputPath)\$(PackageId)\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)" />
+        <None Include="$(OutputPath)\$(PackageId)\**\*.xaml" Pack="true" PackagePath="contentTransitive/$(PackageId)" />
+        <None Include="$(OutputPath)\$(PackageId)\Assets\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)/Assets" />
     </ItemGroup>
     <!-- Project Referer -->
     <ItemGroup>

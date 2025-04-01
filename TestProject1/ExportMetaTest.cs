@@ -96,6 +96,11 @@ public class TestMetaData5
 {
     public List<string> TestListString { get; init; } = [];
 }
+[ExportMeta]
+public class TestMetaData6
+{
+  public TestGe<string,int> TestListString { get; init; }
+}
 
 public class ExportMetaTest
 {
@@ -114,105 +119,125 @@ public class ExportMetaTest
                                           "Properties": {
                                             "TestString": {
                                               "Type": "System.String",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestString"
+                                              "PropertyGroupName": "TestString",
+                                              "Nullable": false
                                             },
                                             "TestStringArray": {
-                                              "Type": "System.String[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestStringArray"
+                                              "PropertyGroupName": "TestStringArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.String",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableString": {
                                               "Type": "System.String",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableString"
+                                              "PropertyGroupName": "TestNullableString",
+                                              "Nullable": true
                                             },
                                             "TestInt32": {
                                               "Type": "System.Int32",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt32"
+                                              "PropertyGroupName": "TestInt32",
+                                              "Nullable": false
                                             },
                                             "TestInt32Array": {
-                                              "Type": "System.Int32[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt32Array"
+                                              "PropertyGroupName": "TestInt32Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Int32",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableInt32": {
                                               "Type": "System.Int32",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableInt32"
+                                              "PropertyGroupName": "TestNullableInt32",
+                                              "Nullable": true
                                             },
                                             "TestBoolean": {
                                               "Type": "System.Boolean",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestBoolean"
+                                              "PropertyGroupName": "TestBoolean",
+                                              "Nullable": false
                                             },
                                             "TestNullableBoolean": {
                                               "Type": "System.Boolean",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableBoolean"
+                                              "PropertyGroupName": "TestNullableBoolean",
+                                              "Nullable": true
                                             },
                                             "TestDouble": {
                                               "Type": "System.Double",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestDouble"
+                                              "PropertyGroupName": "TestDouble",
+                                              "Nullable": false
                                             },
                                             "TestDoubleArray": {
-                                              "Type": "System.Double[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestDoubleArray"
+                                              "PropertyGroupName": "TestDoubleArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Double",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableDouble": {
                                               "Type": "System.Double",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableDouble"
+                                              "PropertyGroupName": "TestNullableDouble",
+                                              "Nullable": true
                                             },
                                             "TestFloat": {
                                               "Type": "System.Single",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestFloat"
+                                              "PropertyGroupName": "TestFloat",
+                                              "Nullable": false
                                             },
                                             "TestFloatArray": {
-                                              "Type": "System.Single[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestFloatArray"
+                                              "PropertyGroupName": "TestFloatArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Single",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableFloat": {
                                               "Type": "System.Single",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableFloat"
+                                              "PropertyGroupName": "TestNullableFloat",
+                                              "Nullable": true
                                             },
                                             "TestInt64": {
                                               "Type": "System.Int64",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt64"
+                                              "PropertyGroupName": "TestInt64",
+                                              "Nullable": false
                                             },
                                             "TestInt64Array": {
-                                              "Type": "System.Int64[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt64Array"
+                                              "PropertyGroupName": "TestInt64Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Int64",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableInt64": {
                                               "Type": "System.Int64",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableInt64"
+                                              "PropertyGroupName": "TestNullableInt64",
+                                              "Nullable": true
                                             }
                                           }
                                         }
@@ -229,147 +254,179 @@ public class ExportMetaTest
                                           "Properties": {
                                             "TestInt16": {
                                               "Type": "System.Int16",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt16"
+                                              "PropertyGroupName": "TestInt16",
+                                              "Nullable": false
                                             },
                                             "TestInt16Array": {
-                                              "Type": "System.Int16[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestInt16Array"
+                                              "PropertyGroupName": "TestInt16Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Int16",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableInt16": {
                                               "Type": "System.Int16",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableInt16"
+                                              "PropertyGroupName": "TestNullableInt16",
+                                              "Nullable": true
                                             },
                                             "TestByte": {
                                               "Type": "System.Byte",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestByte"
+                                              "PropertyGroupName": "TestByte",
+                                              "Nullable": false
                                             },
                                             "TestByteArray": {
-                                              "Type": "System.Byte[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestByteArray"
+                                              "PropertyGroupName": "TestByteArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Byte",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableByte": {
                                               "Type": "System.Byte",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableByte"
+                                              "PropertyGroupName": "TestNullableByte",
+                                              "Nullable": true
                                             },
                                             "TestChar": {
                                               "Type": "System.Char",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestChar"
+                                              "PropertyGroupName": "TestChar",
+                                              "Nullable": false
                                             },
                                             "TestCharArray": {
-                                              "Type": "System.Char[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestCharArray"
+                                              "PropertyGroupName": "TestCharArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Char",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableChar": {
                                               "Type": "System.Char",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableChar"
+                                              "PropertyGroupName": "TestNullableChar",
+                                              "Nullable": true
                                             },
                                             "TestDecimal": {
                                               "Type": "System.Decimal",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestDecimal"
+                                              "PropertyGroupName": "TestDecimal",
+                                              "Nullable": false
                                             },
                                             "TestDecimalArray": {
-                                              "Type": "System.Decimal[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestDecimalArray"
+                                              "PropertyGroupName": "TestDecimalArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Decimal",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableDecimal": {
                                               "Type": "System.Decimal",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableDecimal"
+                                              "PropertyGroupName": "TestNullableDecimal",
+                                              "Nullable": true
                                             },
                                             "TestSByte": {
                                               "Type": "System.SByte",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestSByte"
+                                              "PropertyGroupName": "TestSByte",
+                                              "Nullable": false
                                             },
                                             "TestSByteArray": {
-                                              "Type": "System.SByte[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestSByteArray"
+                                              "PropertyGroupName": "TestSByteArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.SByte",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableSByte": {
                                               "Type": "System.SByte",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableSByte"
+                                              "PropertyGroupName": "TestNullableSByte",
+                                              "Nullable": true
                                             },
                                             "TestUInt16": {
                                               "Type": "System.UInt16",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt16"
+                                              "PropertyGroupName": "TestUInt16",
+                                              "Nullable": false
                                             },
                                             "TestUInt16Array": {
-                                              "Type": "System.UInt16[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt16Array"
+                                              "PropertyGroupName": "TestUInt16Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.UInt16",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableUInt16": {
                                               "Type": "System.UInt16",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableUInt16"
+                                              "PropertyGroupName": "TestNullableUInt16",
+                                              "Nullable": true
                                             },
                                             "TestUInt32": {
                                               "Type": "System.UInt32",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt32"
+                                              "PropertyGroupName": "TestUInt32",
+                                              "Nullable": false
                                             },
                                             "TestUInt32Array": {
-                                              "Type": "System.UInt32[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt32Array"
+                                              "PropertyGroupName": "TestUInt32Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.UInt32",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableUInt32": {
                                               "Type": "System.UInt32",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableUInt32"
+                                              "PropertyGroupName": "TestNullableUInt32",
+                                              "Nullable": true
                                             },
                                             "TestUInt64": {
                                               "Type": "System.UInt64",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt64"
+                                              "PropertyGroupName": "TestUInt64",
+                                              "Nullable": false
                                             },
                                             "TestUInt64Array": {
-                                              "Type": "System.UInt64[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestUInt64Array"
+                                              "PropertyGroupName": "TestUInt64Array",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.UInt64",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableUInt64": {
                                               "Type": "System.UInt64",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableUInt64"
+                                              "PropertyGroupName": "TestNullableUInt64",
+                                              "Nullable": true
                                             }
                                           }
                                         }
@@ -380,105 +437,124 @@ public class ExportMetaTest
     public void Test3()
     {
         var content = ExportMetaMethod.ExportMeta(typeof(TestMetaData3));
-        Console.WriteLine(content);
         Assert.That(content, Is.EqualTo("""
                                         {
                                           "Type": "TestProject1.TestMetaData3",
                                           "Properties": {
                                             "TestType": {
                                               "Type": "System.Type",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestType"
+                                              "PropertyGroupName": "TestType",
+                                              "Nullable": false
                                             },
                                             "TestTypeArray": {
-                                              "Type": "System.Type[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestTypeArray"
+                                              "PropertyGroupName": "TestTypeArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Type",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableType": {
                                               "Type": "System.Type",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableType"
+                                              "PropertyGroupName": "TestNullableType",
+                                              "Nullable": true
                                             },
                                             "TestDateTime": {
                                               "Type": "System.DateTime",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestDateTime"
+                                              "PropertyGroupName": "TestDateTime",
+                                              "Nullable": false
                                             },
                                             "TestDateTimeArray": {
-                                              "Type": "System.DateTime[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestDateTimeArray"
+                                              "PropertyGroupName": "TestDateTimeArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.DateTime",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableDateTime": {
                                               "Type": "System.DateTime",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableDateTime"
+                                              "PropertyGroupName": "TestNullableDateTime",
+                                              "Nullable": true
                                             },
                                             "TestDateTimeOffset": {
                                               "Type": "System.DateTimeOffset",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestDateTimeOffset"
+                                              "PropertyGroupName": "TestDateTimeOffset",
+                                              "Nullable": false
                                             },
                                             "TestDateTimeOffsetArray": {
-                                              "Type": "System.DateTimeOffset[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
-                                              "PropertyGroupName": "TestDateTimeOffsetArray"
+                                              "PropertyGroupName": "TestDateTimeOffsetArray",
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.DateTimeOffset",
+                                                "Nullable": false
+                                              }
                                             },
                                             "TestNullableDateTimeOffset": {
                                               "Type": "System.DateTimeOffset",
-                                              "Nullable": true,
                                               "Required": true,
-                                              "PropertyGroupName": "TestNullableDateTimeOffset"
+                                              "PropertyGroupName": "TestNullableDateTimeOffset",
+                                              "Nullable": true
                                             },
                                             "TestTimeSpan": {
                                               "Type": "System.TimeSpan",
-                                              "Nullable": false,
                                               "Required": true,
                                               "PropertyGroupName": "TestTimeSpan",
+                                              "Nullable": false,
                                               "Regex": "^(\\d\\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.\\d{1,7})?$"
                                             },
                                             "TestTimeSpanArray": {
-                                              "Type": "System.TimeSpan[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
                                               "PropertyGroupName": "TestTimeSpanArray",
-                                              "Regex": "^(\\d\\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.\\d{1,7})?$"
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.TimeSpan",
+                                                "Nullable": false,
+                                                "Regex": "^(\\d\\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.\\d{1,7})?$"
+                                              }
                                             },
                                             "TestNullableTimeSpan": {
                                               "Type": "System.TimeSpan",
-                                              "Nullable": true,
                                               "Required": true,
                                               "PropertyGroupName": "TestNullableTimeSpan",
+                                              "Nullable": true,
                                               "Regex": "^(\\d\\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.\\d{1,7})?$"
                                             },
                                             "TestGuid": {
                                               "Type": "System.Guid",
-                                              "Nullable": false,
                                               "Required": true,
                                               "PropertyGroupName": "TestGuid",
+                                              "Nullable": false,
                                               "Regex": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
                                             },
                                             "TestGuidArray": {
-                                              "Type": "System.Guid[]",
-                                              "Nullable": false,
+                                              "Type": "System.Array",
                                               "Required": true,
                                               "PropertyGroupName": "TestGuidArray",
-                                              "Regex": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.Guid",
+                                                "Nullable": false,
+                                                "Regex": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                                              }
                                             },
                                             "TestNullableGuid": {
                                               "Type": "System.Guid",
-                                              "Nullable": true,
                                               "Required": true,
                                               "PropertyGroupName": "TestNullableGuid",
+                                              "Nullable": true,
                                               "Regex": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
                                             }
                                           }
@@ -496,9 +572,9 @@ public class ExportMetaTest
                                           "Properties": {
                                             "TestDateTime": {
                                               "Type": "System.DateTime",
-                                              "Nullable": false,
                                               "Required": true,
                                               "PropertyGroupName": "TestDateTime",
+                                              "Nullable": false,
                                               "DateTime": {
                                                 "Format": "yyyy-MM-dd HH:mm:ss",
                                                 "InvariantCulture": false
@@ -506,9 +582,9 @@ public class ExportMetaTest
                                             },
                                             "TestDateTimeOffset": {
                                               "Type": "System.DateTimeOffset",
-                                              "Nullable": false,
                                               "Required": true,
                                               "PropertyGroupName": "TestDateTimeOffset",
+                                              "Nullable": false,
                                               "DateTime": {
                                                 "Format": "yyyy-MM-dd HH:mm:ss",
                                                 "InvariantCulture": true
@@ -516,9 +592,9 @@ public class ExportMetaTest
                                             },
                                             "TestDateTimeOffset2": {
                                               "Type": "System.DateTimeOffset",
-                                              "Nullable": false,
                                               "Required": true,
-                                              "PropertyGroupName": "TestDateTimeOffset2"
+                                              "PropertyGroupName": "TestDateTimeOffset2",
+                                              "Nullable": false
                                             }
                                           }
                                         }
@@ -534,11 +610,37 @@ public class ExportMetaTest
                                           "Type": "TestProject1.TestMetaData5",
                                           "Properties": {
                                             "TestListString": {
-                                              "Type": "System.String",
-                                              "Nullable": false,
+                                              "Type": "System.Collections.Generic.List",
                                               "Required": true,
                                               "PropertyGroupName": "TestListString",
-                                              "GenericType": "System.Collections.Generic.List"
+                                              "Nullable": false,
+                                              "Item": {
+                                                "Type": "System.String",
+                                                "Nullable": false
+                                              }
+                                            }
+                                          }
+                                        }
+                                        """));
+    }
+    [Test]
+    public void Test6()
+    {
+        var content = ExportMetaMethod.ExportMeta(typeof(TestMetaData6));
+        Assert.That(content, Is.EqualTo("""
+                                        {
+                                          "Type": "TestProject1.TestMetaData6",
+                                          "Properties": {
+                                            "TestListString": {
+                                              "Type": "TestProject1.TestGe",
+                                              "Required": true,
+                                              "PropertyGroupName": "TestListString",
+                                              "Nullable": false,
+                                              "GenericType": [
+                                                "System.String",
+                                                "System.Int32"
+                                              ],
+                                              "Properties": {}
                                             }
                                           }
                                         }

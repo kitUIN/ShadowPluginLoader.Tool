@@ -47,3 +47,8 @@ public abstract class AbstractPluginMetaData
     [Meta(Exclude = true)]
     public JsonNode? EntryPoints { get; init; } = null;
 }
+
+public class TestGe<T, V>
+{
+    
+}

@@ -11,8 +11,6 @@ namespace ShadowPluginLoader.Tool;
 
 public static class ReadMetaMethod
 {
-    private static string _projectPath = "";
-
     public static readonly string[] SupportType =
     [
         "System.Int32", "System.Int32[]",
@@ -36,30 +34,12 @@ public static class ReadMetaMethod
         "System.Byte", "System.Byte[]",
     ];
 
-    private static JsonNode GetDefineJson()
+    public static JsonNode GetDefineJson(string projectPath)
     {
-        var file = Path.Combine(_projectPath, "plugin.d.json");
+        var file = Path.Combine(projectPath, "plugin.d.json");
         if (!File.Exists(file))
-            throw new Exception($"Missing {_projectPath}plugin.d.json");
+            throw new Exception($"Missing {projectPath}plugin.d.json");
         return JsonNode.Parse(File.ReadAllText(file))!;
-    }
-
-    private static void SavePluginJson(JsonObject jsonObject)
-    {
-        var options = new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
-        };
-#if NET7_0
-        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
-#endif
-        var path = Path.Combine(_projectPath, "plugin.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllText(path,
-            jsonObject.ToJsonString(options)
-        );
-        Logger.Log($"plugin.json -> {path}", LoggerLevel.Success);
     }
 
     private static void WarnDependencies()
@@ -94,7 +74,7 @@ public static class ReadMetaMethod
         return arrays;
     }
 
-    private static JsonValue? GetVale(string type, string value)
+    private static JsonValue GetVale(string type, string value)
     {
         return type switch
         {
@@ -108,45 +88,101 @@ public static class ReadMetaMethod
             "System.Single" => JsonValue.Create(Convert.ToSingle(value)),
             "System.Double" => JsonValue.Create(Convert.ToDouble(value)),
             "System.Decimal" => JsonValue.Create(Convert.ToDecimal(value)),
-            _ => JsonValue.Create(value),
+            _ => JsonValue.Create(value)!,
         };
     }
 
-    private static void CheckJsonRequired(JsonNode json, XmlNode root, XmlNode propertyGroup, string dllName)
+    public static string CheckJsonRequired(JsonObject json, XmlNode root, XmlNode propertyGroup, string dllName)
     {
         var res = new JsonObject
         {
             ["DllName"] = dllName
         };
-        var properties = json["Properties"]!.AsObject();
-        foreach (var node in properties)
+        foreach (var node in json["Properties"]!.AsObject())
         {
-            var name = node!.Key;
-            if (name == "Dependencies")
-            {
-                res[name] = LoadDependencies(root);
-                continue;
-            }
-
-            var current = node.Value!;
-            ReadProperty(propertyGroup, current, name, res);
+            if (res.ContainsKey(node.Key)) continue;
+            var j = LoadProperty(propertyGroup, (JsonObject)node.Value!);
+            if (j is JsonObject { Count: 0 } or JsonArray { Count: 0 }) continue;
+            res[node.Key] = j;
         }
 
-        SavePluginJson(res);
+        if (!res.ContainsKey("Dependencies")) res["Dependencies"] = new JsonArray();
+
+        foreach (var dep in LoadDependencies(root))
+        {
+            ((JsonArray)res["Dependencies"]!).Add(dep);
+        }
+
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+        };
+#if NET7_0
+        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
+#endif
+        return res.ToJsonString(options);
     }
 
-    private static void ReadProperty(XmlNode propertyGroup, JsonNode current, string name, JsonObject res)
+    private static JsonNode LoadProperty(XmlNode propertyGroup, JsonObject current)
     {
-        var nullable = current["Nullable"]!.GetValue<bool>();
+        var isArray = current.ContainsKey("Item");
+        var type = current["Type"]!.GetValue<string>();
+        JsonNode res = isArray ? new JsonArray() : new JsonObject();
         var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
         var property = propertyGroup.SelectSingleNode(propertyGroupName);
         if (property is null)
         {
             if (current["Required"]!.GetValue<bool>())
                 throw new Exception($"Missing Required Property {propertyGroupName} In <{propertyGroup.Name}>");
-            return;
+            return res;
         }
 
+        if (!isArray)
+        {
+            if (current.ContainsKey("Properties") &&
+                current["Properties"] is JsonObject jsonProperties &&
+                jsonProperties.Count > 0)
+            {
+                // 自定义类
+                foreach (var prop in jsonProperties)
+                {
+                    ((JsonObject)res)[prop.Key] = ScanProperty(property, prop.Value!, propertyGroupName);
+                }
+            }
+            else
+            {
+                // 值
+                return GetVale(type, property.InnerText!);
+            }
+        }
+        else
+        {
+            // 列表
+            var item = current["Item"]!.AsObject();
+            var arrayType = item["Type"]!.GetValue<string>();
+            if (property.InnerText.Contains(';'))
+            {
+                foreach (var v in property.InnerText.Split(";"))
+                {
+                    ((JsonArray)res).Add(GetVale(arrayType, v));
+                }
+            }
+            else
+            {
+                foreach (XmlNode child in property.ChildNodes)
+                {
+                    ((JsonArray)res).Add(ScanProperty(child, item, propertyGroupName));
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private static JsonNode? ScanProperty(XmlNode property, JsonNode current, string name)
+    {
+        var nullable = current["Nullable"]!.GetValue<bool>();
         var type = current["Type"]!.GetValue<string>();
         var value = property.InnerText;
         if (current["Regex"] is not null)
@@ -158,66 +194,16 @@ public static class ReadMetaMethod
             }
         }
 
-        if (nullable && value == "null")
+        if (nullable && value == "null") return null;
+        if (SupportType.Contains(type)) return GetVale(type, value);
+        var propertyJson = new JsonObject();
+        var properties = current["Properties"];
+        if (properties == null) return null;
+        foreach (var node in properties.AsObject())
         {
-            res[name] = null;
+            propertyJson[node.Key] = LoadProperty(property, (JsonObject)node.Value!);
         }
-        else
-        {
-            if (!type.StartsWith("System."))
-            {
-                var propertyJson = new JsonObject();
-                var properties = current["Properties"];
-                if (properties == null) return;
-                foreach (var node in properties.AsObject())
-                {
-                    ReadProperty(property, node.Value!, node!.Key, propertyJson);
-                }
 
-                res[name] = propertyJson;
-            }
-            else if (type.EndsWith("[]"))
-            {
-                var arrayType = type[..^2];
-                var arrays = new JsonArray();
-                if (property.InnerText.Contains(';'))
-                {
-                    foreach (var v in property.InnerText.Split(";"))
-                    {
-                        arrays.Add(GetVale(arrayType, v));
-                    }
-                }
-                else
-                {
-                    var items = property.SelectNodes("Item");
-                    if (items is null) return;
-                    foreach (XmlNode item in items)
-                    {
-                        arrays.Add(GetVale(arrayType, item.InnerText));
-                    }
-                }
-
-                res[name] = arrays;
-            }
-            else
-            {
-                res[name] = GetVale(type, value);
-            }
-        }
-    }
-
-    public static void Read(string projectPath, string csproj, string meta, string dllName)
-    {
-        _projectPath = projectPath;
-        var json = GetDefineJson();
-        var xmlDoc = new XmlDocument();
-        xmlDoc.Load(Path.Combine(_projectPath, csproj));
-        var pluginMeta = new XmlDocument();
-        pluginMeta.LoadXml("<PluginMeta>" + meta + "</PluginMeta>");
-        var root = xmlDoc.DocumentElement;
-        var pluginMetaRoot = pluginMeta.DocumentElement;
-        if (root is null) return;
-        if (pluginMetaRoot is null) return;
-        CheckJsonRequired(json, root, pluginMetaRoot, dllName);
+        return propertyJson;
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Nodes;
+using System.Xml;
 using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
@@ -64,7 +66,21 @@ internal class Program
                     }
 
                     var dllName = args[4]; // DllName
-                    ReadMetaMethod.Read(projectPath, csproj, pluginMeta, dllName);
+                    var defineJson = ReadMetaMethod.GetDefineJson(projectPath);
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.Load(Path.Combine(projectPath, csproj));
+                    var pluginMetaRoot = new XmlDocument();
+                    pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
+                    var root = xmlDoc.DocumentElement;
+                    var pluginMetaDoc = pluginMetaRoot.DocumentElement;
+                    if (root is null) break;
+                    if (pluginMetaDoc is null) break;
+                    var content =
+                        ReadMetaMethod.CheckJsonRequired((JsonObject)defineJson, root, pluginMetaDoc, dllName);
+                    var path = Path.Combine(projectPath, "plugin.json");
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                    File.WriteAllText(path, content);
+                    Logger.Log($"plugin.json -> {path}", LoggerLevel.Success);
                     break;
                 }
                 case "2":

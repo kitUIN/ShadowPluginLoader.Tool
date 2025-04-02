@@ -98,6 +98,14 @@ public class ReadMetaMethodTest
       var pluginMetaDoc = pluginMetaRoot.DocumentElement;
       var content =
 	      ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
-      Console.WriteLine(content);
+      Assert.That(content, Is.EqualTo("""
+                                      {
+                                        "DllName": "Test.dll",
+                                        "Id": "Local",
+                                        "Name": "本地阅读器",
+                                        "Version": "1.0.0",
+                                        "Dependencies": []
+                                      }
+                                      """));
     }
 }

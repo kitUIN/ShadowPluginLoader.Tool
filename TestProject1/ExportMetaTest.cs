@@ -646,4 +646,58 @@ public class ExportMetaTest
                                         }
                                         """));
     }
+    
+    [Test]
+    public void Test7()
+    {
+      var content = ExportMetaMethod.ExportMeta(typeof(AbstractPluginMetaData));
+      Console.WriteLine(content);
+      Assert.That(content, Is.EqualTo("""
+                                      {
+                                        "Type": "TestProject1.AbstractPluginMetaData",
+                                        "Properties": {
+                                          "Id": {
+                                            "Type": "System.String",
+                                            "Required": true,
+                                            "PropertyGroupName": "Id",
+                                            "Nullable": false
+                                          },
+                                          "Name": {
+                                            "Type": "System.String",
+                                            "Required": true,
+                                            "PropertyGroupName": "Name",
+                                            "Nullable": false
+                                          },
+                                          "DllName": {
+                                            "Type": "System.String",
+                                            "Required": false,
+                                            "PropertyGroupName": "DllName",
+                                            "Nullable": false
+                                          },
+                                          "Version": {
+                                            "Type": "System.String",
+                                            "Required": true,
+                                            "PropertyGroupName": "Version",
+                                            "Nullable": false
+                                          },
+                                          "Priority": {
+                                            "Type": "System.Int32",
+                                            "Required": false,
+                                            "PropertyGroupName": "Priority",
+                                            "Nullable": false
+                                          },
+                                          "Dependencies": {
+                                            "Type": "System.Array",
+                                            "Required": true,
+                                            "PropertyGroupName": "Dependencies",
+                                            "Nullable": false,
+                                            "Item": {
+                                              "Type": "System.String",
+                                              "Nullable": false
+                                            }
+                                          }
+                                        }
+                                      }
+                                      """));
+    }
 }

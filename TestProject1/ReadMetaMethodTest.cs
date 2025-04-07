@@ -4,7 +4,6 @@ using ShadowPluginLoader.Tool;
 
 namespace TestProject1;
 
-
 public class ReadMetaMethodTest
 {
     [SetUp]
@@ -15,7 +14,7 @@ public class ReadMetaMethodTest
     [Test]
     public void Test1()
     {
-      var define = JsonNode.Parse("""
+        var define = JsonNode.Parse("""
                                     {
                                       "Type": "TestProject1.AbstractPluginMetaData",
                                       "Properties": {
@@ -63,55 +62,56 @@ public class ReadMetaMethodTest
                                     }
 
                                     """);
-      var pluginMeta = """
-                       	<Id>Local</Id>
-                       	<Name>本地阅读器</Name>
-                       	<Version>1.0.0</Version>
-                       	<Logo>fluent://regular/ResizeImage</Logo>
-                       	<PluginLang>zh-CN</PluginLang>
-                       	<WebUri>$(RepositoryUrl)</WebUri>
-                       	<Description>$(Description)</Description>
-                       	<Authors>$(Authors)</Authors>
-                       	<PluginManage>
-                       		<CanOpenFolder>false</CanOpenFolder>
-                       		<CanDelete>false</CanDelete>
-                       		<CanSwitch>false</CanSwitch>
-                       	</PluginManage>
-                       	<AffiliationTag>
-                       		<Name>Local</Name>
-                       		<PluginId>Local</PluginId>
-                       		<Icon>fluent://regular/ResizeImage</Icon>
-                       		<ForegroundHex>#000000</ForegroundHex>
-                       		<BackgroundHex>#ffd657</BackgroundHex>
-                       	</AffiliationTag>
-                       """;
-      
-      var xmlDoc = new XmlDocument();
-      xmlDoc.LoadXml("""
-                    <Project Sdk="Microsoft.NET.Sdk">
-                    <PropertyGroupName></PropertyGroupName>
-                    </Project>
-                    """);
-      var pluginMetaRoot = new XmlDocument();
-      pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
-      var root = xmlDoc.DocumentElement;
-      var pluginMetaDoc = pluginMetaRoot.DocumentElement;
-      var content =
-	      ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
-      Assert.That(content, Is.EqualTo("""
-                                      {
-                                        "DllName": "Test.dll",
-                                        "Id": "Local",
-                                        "Name": "本地阅读器",
-                                        "Version": "1.0.0",
-                                        "Dependencies": []
-                                      }
-                                      """));
+        var pluginMeta = """
+                         	<Id>Local</Id>
+                         	<Name>本地阅读器</Name>
+                         	<Version>1.0.0</Version>
+                         	<Logo>fluent://regular/ResizeImage</Logo>
+                         	<PluginLang>zh-CN</PluginLang>
+                         	<WebUri>$(RepositoryUrl)</WebUri>
+                         	<Description>$(Description)</Description>
+                         	<Authors>$(Authors)</Authors>
+                         	<PluginManage>
+                         		<CanOpenFolder>false</CanOpenFolder>
+                         		<CanDelete>false</CanDelete>
+                         		<CanSwitch>false</CanSwitch>
+                         	</PluginManage>
+                         	<AffiliationTag>
+                         		<Name>Local</Name>
+                         		<PluginId>Local</PluginId>
+                         		<Icon>fluent://regular/ResizeImage</Icon>
+                         		<ForegroundHex>#000000</ForegroundHex>
+                         		<BackgroundHex>#ffd657</BackgroundHex>
+                         	</AffiliationTag>
+                         """;
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml("""
+                       <Project Sdk="Microsoft.NET.Sdk">
+                       <PropertyGroupName></PropertyGroupName>
+                       </Project>
+                       """);
+        var pluginMetaRoot = new XmlDocument();
+        pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
+        var root = xmlDoc.DocumentElement;
+        var pluginMetaDoc = pluginMetaRoot.DocumentElement;
+        var content =
+            ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
+        Assert.That(content, Is.EqualTo("""
+                                        {
+                                          "DllName": "Test.dll",
+                                          "Id": "Local",
+                                          "Name": "本地阅读器",
+                                          "Version": "1.0.0",
+                                          "Dependencies": []
+                                        }
+                                        """));
     }
+
     [Test]
     public void Test2()
     {
-      var define = JsonNode.Parse("""
+        var define = JsonNode.Parse("""
                                     {
                                       "Type": "ShadowViewer.Core.Plugins.PluginMetaData",
                                       "Properties": {
@@ -298,37 +298,66 @@ public class ReadMetaMethodTest
                                       }
                                     }
                                     """);
-      var pluginMeta = """
-                       <Id>Local</Id><Name>本地阅读器</Name><Version>1.3.16</Version><Logo>fluent://regular/ResizeImage</Logo><PluginLang>zh-CN</PluginLang><WebUri>https://github.com/kitUIN/ShadowViewer.Plugin.Local</WebUri><Description>ShadowViewer本地阅读插件</Description><Authors>kitUIN</Authors><CoreVersion>2025.4.7.3</CoreVersion><PluginManage><CanOpenFolder>false</CanOpenFolder><CanSwitch>false</CanSwitch></PluginManage><AffiliationTag><Name>Local</Name><PluginId>Local</PluginId><Icon>fluent://regular/ResizeImage</Icon><ForegroundHex>#000000</ForegroundHex><BackgroundHex>#ffd657</BackgroundHex></AffiliationTag>
-                       
-                       """;
-      
-      var xmlDoc = new XmlDocument();
-      xmlDoc.LoadXml("""
-                    <Project Sdk="Microsoft.NET.Sdk">
-                    <PropertyGroupName></PropertyGroupName>
-                    </Project>
-                    """);
-      var pluginMetaRoot = new XmlDocument();
-      pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
-      var root = xmlDoc.DocumentElement;
-      var pluginMetaDoc = pluginMetaRoot.DocumentElement;
-      var content =
-	      ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
-      Console.WriteLine(content);
-      Assert.That(content, Is.EqualTo("""
-                                      {
-                                        "DllName": "Test.dll",
-                                        "Description": "ShadowViewer本地阅读插件",
-                                        "Authors": "kitUIN",
-                                        "WebUri": "https://github.com/kitUIN/ShadowViewer.Plugin.Local",
-                                        "Logo": "fluent://regular/ResizeImage",
-                                        "CoreVersion": "2025.4.7.3",
-                                        "Id": "Local",
-                                        "Name": "本地阅读器",
-                                        "Version": "1.3.16",
-                                        "Dependencies": []
-                                      }
-                                      """));
+        var pluginMeta = """
+                           <Id>Local</Id>
+                         <Name>本地阅读器</Name>
+                         <Version>$(Version)</Version>
+                         <Logo>fluent://regular/ResizeImage</Logo>
+                         <PluginLang>zh-CN</PluginLang>
+                         <WebUri>$(RepositoryUrl)</WebUri>
+                         <Description>$(Description)</Description>
+                         <Authors>$(Authors)</Authors>
+                         <CoreVersion>2025.4.7.8</CoreVersion>
+                         <PluginManage>
+                         	<CanOpenFolder>false</CanOpenFolder>
+                         	<CanSwitch>false</CanSwitch>
+                         </PluginManage>
+                         <AffiliationTag>
+                         	<Name>Local</Name>
+                         	<PluginId>Local</PluginId>
+                         	<Icon>fluent://regular/ResizeImage</Icon>
+                         	<ForegroundHex>#000000</ForegroundHex>
+                         	<BackgroundHex>#ffd657</BackgroundHex>
+                         </AffiliationTag>
+                         """;
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml("""
+                       <Project Sdk="Microsoft.NET.Sdk">
+                       <PropertyGroupName></PropertyGroupName>
+                       </Project>
+                       """);
+        var pluginMetaRoot = new XmlDocument();
+        pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
+        var root = xmlDoc.DocumentElement;
+        var pluginMetaDoc = pluginMetaRoot.DocumentElement;
+        var content =
+            ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
+        Console.WriteLine(content);
+        Assert.That(content, Is.EqualTo("""
+                                        {
+                                          "DllName": "Test.dll",
+                                          "Description": "$(Description)",
+                                          "Authors": "$(Authors)",
+                                          "WebUri": "$(RepositoryUrl)",
+                                          "Logo": "fluent://regular/ResizeImage",
+                                          "PluginManage": {
+                                            "CanSwitch": false,
+                                            "CanOpenFolder": false
+                                          },
+                                          "AffiliationTag": {
+                                            "Name": "Local",
+                                            "BackgroundHex": "#ffd657",
+                                            "ForegroundHex": "#000000",
+                                            "Icon": "fluent://regular/ResizeImage",
+                                            "PluginId": "Local"
+                                          },
+                                          "CoreVersion": "2025.4.7.8",
+                                          "Id": "Local",
+                                          "Name": "本地阅读器",
+                                          "Version": "$(Version)",
+                                          "Dependencies": []
+                                        }
+                                        """));
     }
 }

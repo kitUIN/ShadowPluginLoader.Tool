@@ -147,15 +147,22 @@ public static class ReadMetaMethod
                 // 自定义类
                 foreach (var prop in jsonProperties)
                 {
-                    var propValue = ScanProperty(property, prop.Value!, propertyGroupName);
-                    if (propValue is null) continue;
+                    var propValue = LoadProperty(property, (JsonObject)prop.Value!);
+                    if (propValue is JsonObject { Count: 0 }) continue;
                     ((JsonObject)res)[prop.Key] = propValue;
                 }
             }
             else
             {
+                var value = property.InnerText;
                 // 值
-                return GetVale(type, property.InnerText!);
+                if (current["Regex"] is null) return GetVale(type, value);
+                var regex = current["Regex"]!.GetValue<string>();
+                if (!Regex.IsMatch(value, regex))
+                {
+                    throw new Exception($"{propertyGroupName}: {value} Does Not Match Regex: {regex}");
+                }
+                return GetVale(type, value);
             }
         }
         else
@@ -174,44 +181,13 @@ public static class ReadMetaMethod
             {
                 foreach (XmlNode child in property.ChildNodes)
                 {
-                    var propValue = ScanProperty(child, item, propertyGroupName);
-                    if (propValue is null) continue;
+                    var propValue = LoadProperty(child, item);
+                    if (propValue is JsonObject { Count: 0 }) continue;
                     ((JsonArray)res).Add(propValue);
                 }
             }
         }
 
         return res;
-    }
-
-    private static JsonNode? ScanProperty(XmlNode property, JsonNode current, string name)
-    {
-        var nullable = current["Nullable"]!.GetValue<bool>();
-        var type = current["Type"]!.GetValue<string>();
-        if (!property.HasChildNodes)
-        {
-            var value = property.InnerText;
-            if (current["Regex"] is not null)
-            {
-                var regex = current["Regex"]!.GetValue<string>();
-                if (!Regex.IsMatch(value, regex))
-                {
-                    throw new Exception($"{name}: {value} Does Not Match Regex: {regex}");
-                }
-            }
-            if (nullable && value == "null") return null;
-            if (SupportType.Contains(type)) return GetVale(type, value);
-        }
-        
-
-        var propertyJson = new JsonObject();
-        var properties = current["Properties"];
-        if (properties == null) return null;
-        foreach (var node in properties.AsObject())
-        {
-            propertyJson[node.Key] = LoadProperty(property, (JsonObject)node.Value!);
-        }
-
-        return propertyJson;
     }
 }

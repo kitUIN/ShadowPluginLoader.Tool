@@ -147,7 +147,9 @@ public static class ReadMetaMethod
                 // 自定义类
                 foreach (var prop in jsonProperties)
                 {
-                    ((JsonObject)res)[prop.Key] = ScanProperty(property, prop.Value!, propertyGroupName);
+                    var propValue = ScanProperty(property, prop.Value!, propertyGroupName);
+                    if (propValue is null) continue;
+                    ((JsonObject)res)[prop.Key] = propValue;
                 }
             }
             else
@@ -172,7 +174,9 @@ public static class ReadMetaMethod
             {
                 foreach (XmlNode child in property.ChildNodes)
                 {
-                    ((JsonArray)res).Add(ScanProperty(child, item, propertyGroupName));
+                    var propValue = ScanProperty(child, item, propertyGroupName);
+                    if (propValue is null) continue;
+                    ((JsonArray)res).Add(propValue);
                 }
             }
         }
@@ -184,18 +188,22 @@ public static class ReadMetaMethod
     {
         var nullable = current["Nullable"]!.GetValue<bool>();
         var type = current["Type"]!.GetValue<string>();
-        var value = property.InnerText;
-        if (current["Regex"] is not null)
+        if (!property.HasChildNodes)
         {
-            var regex = current["Regex"]!.GetValue<string>();
-            if (!Regex.IsMatch(value, regex))
+            var value = property.InnerText;
+            if (current["Regex"] is not null)
             {
-                throw new Exception($"{name}: {value} Does Not Match Regex: {regex}");
+                var regex = current["Regex"]!.GetValue<string>();
+                if (!Regex.IsMatch(value, regex))
+                {
+                    throw new Exception($"{name}: {value} Does Not Match Regex: {regex}");
+                }
             }
+            if (nullable && value == "null") return null;
+            if (SupportType.Contains(type)) return GetVale(type, value);
         }
+        
 
-        if (nullable && value == "null") return null;
-        if (SupportType.Contains(type)) return GetVale(type, value);
         var propertyJson = new JsonObject();
         var properties = current["Properties"];
         if (properties == null) return null;

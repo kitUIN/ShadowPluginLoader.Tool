@@ -166,10 +166,7 @@ public static class ExportMetaMethod
 
                 if (!string.IsNullOrEmpty(m.EntryPointName))
                 {
-                    if (itemUnknownType != null)
-                        prop["Item"]!["EntryPointName"] = m.EntryPointName;
-                    else
-                        prop["EntryPointName"] = m.EntryPointName;
+                    prop["EntryPointName"] = m.EntryPointName;
                 }
             }
 

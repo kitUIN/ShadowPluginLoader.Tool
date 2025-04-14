@@ -88,7 +88,13 @@ public class ReadMetaMethodTest
         var xmlDoc = new XmlDocument();
         xmlDoc.LoadXml("""
                        <Project Sdk="Microsoft.NET.Sdk">
-                       <PropertyGroupName></PropertyGroupName>
+                        
+                             <ItemGroup Label="Dependencies">
+                               <PackageReference Include="ShadowViewer.Plugin.Local" Version="1.3.19" />
+                               <PackageReference Include="ShadowExample.Plugin.World" Version="1.3.0.0" Label=">=1.20.0" />
+                               <PackageReference Include="ShadowExample.Plugin.Tall" Version="1.1" Label="=1.20.0" />
+                             </ItemGroup>
+                             
                        </Project>
                        """);
         var pluginMetaRoot = new XmlDocument();
@@ -97,13 +103,18 @@ public class ReadMetaMethodTest
         var pluginMetaDoc = pluginMetaRoot.DocumentElement;
         var content =
             ReadMetaMethod.CheckJsonRequired((JsonObject)define!, root!, pluginMetaDoc!, "Test.dll");
+        // Console.WriteLine(content);
         Assert.That(content, Is.EqualTo("""
                                         {
                                           "DllName": "Test.dll",
                                           "Id": "Local",
                                           "Name": "本地阅读器",
                                           "Version": "1.0.0",
-                                          "Dependencies": []
+                                          "Dependencies": [
+                                            "ShadowViewer.Plugin.Local>=1.3.19",
+                                            "ShadowExample.Plugin.World>=1.20.0",
+                                            "ShadowExample.Plugin.Tall=1.20.0"
+                                          ]
                                         }
                                         """));
     }

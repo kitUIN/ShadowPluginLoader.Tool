@@ -66,9 +66,37 @@ public static class ReadMetaMethod
 
         foreach (XmlNode dependency in dependencies)
         {
-            var name = dependency.Attributes!["Include"]!.Value;
-            var version = dependency.Attributes!["Version"]!.Value;
-            arrays.Add($"{name}={version}");
+            var name = dependency.Attributes!["Include"]?.Value;
+            var version = dependency.Attributes!["Version"]?.Value;
+            var label = dependency.Attributes?["Label"]?.Value;
+
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+
+            string depString;
+
+            if (!string.IsNullOrWhiteSpace(label))
+            {
+                // 校验 Label 格式，只允许 >= 或 <= 开头
+                if (label.StartsWith(">=") || label.StartsWith("<=")|| label.StartsWith("="))
+                {
+                    depString = $"{name}{label}";
+                }
+                else
+                {
+                    throw new Exception($"Invalid Label format for dependency '{name}': '{label}' (must start with '>=' or '<=' or '=').");
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(version))
+            {
+                depString = $"{name}>={version}";
+            }
+            else
+            {
+                continue; // 如果既没有 label 也没有 version，就跳过
+            }
+
+            arrays.Add(depString);
         }
 
         return arrays;
@@ -110,7 +138,7 @@ public static class ReadMetaMethod
 
         foreach (var dep in LoadDependencies(root))
         {
-            ((JsonArray)res["Dependencies"]!).Add(dep);
+            ((JsonArray)res["Dependencies"]!).Add(dep!.GetValue<string>());
         }
 
         var options = new JsonSerializerOptions

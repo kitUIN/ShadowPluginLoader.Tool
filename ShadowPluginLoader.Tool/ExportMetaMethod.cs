@@ -58,11 +58,12 @@ public static class ExportMetaMethod
         var props = new JsonObject();
         foreach (var property in properties)
         {
-            var propertyType = PropertyTypeInfo.Analyze(property);
             // 忽略TypeId,Object
-            if (property.Name == "TypeId" && propertyType.TypeName == "System.Object") continue;
+            if (property.Name == "TypeId" && property.PropertyType == typeof(object)) continue;
             var m = property.GetCustomAttribute<MetaAttribute>();
             if (m is { Exclude: true }) continue;
+            var propertyType = PropertyTypeInfo.Analyze(m?.JsonType ?? property.PropertyType);
+            var isArray = propertyType is { IsArray: true, ItemType: not null };
             var prop = new JsonObject()
             {
                 ["Type"] = propertyType.TypeName,
@@ -72,16 +73,16 @@ public static class ExportMetaMethod
                     : m.PropertyGroupName,
                 ["Nullable"] = propertyType.IsNullable,
             };
-            if (propertyType is { IsArray: true, ItemType: { } itemType })
+            if (isArray)
             {
                 prop["Item"] = new JsonObject()
                 {
-                    ["Type"] = itemType.TypeName,
-                    ["Nullable"] = itemType.IsNullable,
+                    ["Type"] = propertyType.ItemType!.TypeName,
+                    ["Nullable"] = propertyType.ItemType!.IsNullable,
                 };
-                if (!ReadMetaMethod.SupportType.Contains(itemType.TypeName))
+                if (!ReadMetaMethod.SupportType.Contains(propertyType.ItemType!.TypeName))
                 {
-                    prop["Item"]!["Properties"] = Properties2JsonObject(itemType.RawType,
+                    prop["Item"]!["Properties"] = Properties2JsonObject(propertyType.ItemType!.RawType,
                         prefix + prop["PropertyGroupName"] + ".");
                 }
             }else if (!ReadMetaMethod.SupportType.Contains(propertyType.TypeName))
@@ -97,7 +98,7 @@ public static class ExportMetaMethod
                 property.GetCustomAttribute<MetaDateTimeAttribute>() is { } dateTimeAttr &&
                 (dateTimeAttr.Format != null || !dateTimeAttr.InvariantCulture))
             {
-                if (propertyType is { IsArray: true, ItemType: not null })
+                if (isArray)
                     prop["Item"]!["DateTime"] = new JsonObject()
                     {
                         ["Format"] = dateTimeAttr.Format,
@@ -115,12 +116,18 @@ public static class ExportMetaMethod
             {
                 if (!string.IsNullOrEmpty(m.Regex))
                 {
-                    if (propertyType is { IsArray: true, ItemType: not null })
+                    if (isArray)
                         prop["Item"]!["Regex"] = m.Regex;
                     else
                         prop["Regex"] = m.Regex;
                 }
-
+                if (!string.IsNullOrEmpty(m.ConstructionTemplate))
+                {
+                    if (isArray)
+                        prop["Item"]!["ConstructionTemplate"] = m.ConstructionTemplate;
+                    else
+                        prop["ConstructionTemplate"] = m.ConstructionTemplate;
+                }
                 if (!string.IsNullOrEmpty(m.EntryPointName))
                 {
                     prop["EntryPointName"] = m.EntryPointName;
@@ -128,14 +135,14 @@ public static class ExportMetaMethod
             }
 
             if (!prop.ContainsKey("Regex") &&
-                Regexs.TryGetValue(propertyType is { IsArray: true, ItemType: {} iteType } ? iteType.TypeName! : propertyType.TypeName, out var value))
+                Regexs.TryGetValue(isArray ? propertyType.ItemType!.TypeName! : propertyType.TypeName, out var value))
                 if (propertyType is { IsArray: true, ItemType: not null })
                     prop["Item"]!["Regex"] = value;
                 else
                     prop["Regex"] = value;
             props[property.Name] = prop;
-            var name = propertyType is { IsArray: true, ItemType: {} itType }
-                ? $"{propertyType.TypeName}<{itType.TypeName}" + (itType.IsNullable ? "?" : "") + ">"
+            var name = isArray
+                ? $"{propertyType.TypeName}<{propertyType.ItemType!.TypeName}" + (propertyType.ItemType!.IsNullable ? "?" : "") + ">"
                 : propertyType.TypeName + (propertyType.IsNullable ? "?" : "");
             Logger.Log($"{prefix}{property.Name}: {name} -> plugin.d.json");
         }

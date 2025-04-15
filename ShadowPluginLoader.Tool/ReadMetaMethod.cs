@@ -32,6 +32,7 @@ public static class ReadMetaMethod
         "System.TimeSpan", "System.TimeSpan[]",
         "System.Guid", "System.Guid[]",
         "System.Byte", "System.Byte[]",
+        "System.Version", "System.Version[]",
     ];
 
     public static JsonNode GetDefineJson(string projectPath)

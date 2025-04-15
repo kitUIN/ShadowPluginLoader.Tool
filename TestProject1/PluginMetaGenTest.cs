@@ -1,56 +1,82 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Dynamic;
+using System.Text.Json.Nodes;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartFormat;
 
 namespace TestProject1;
 
 public class PluginMetaGenTest
 {
     private string _pluginId;
+    private bool _buildIn = false;
 
     [SetUp]
     public void Setup()
     {
     }
 
-    private Dictionary<string, List<string>> EntryPoints { get; } = new()
+    private Dictionary<string, HashSet<string>> EntryPoints { get; } = new()
     {
         ["SettingsPage"] = ["SettingsPage"],
         ["HistoryResponder"] = ["HistoryResponder"],
     };
 
-    private string GetValue(JObject dNode, JToken? pluginNode, bool pluginTokenIsObject, int depth = 0)
+    private string GetValue(JObject dNode, JToken? pluginNode,
+        bool pluginTokenIsObject, Dictionary<string, HashSet<string>> entryPoints, int depth = 0)
     {
         if (pluginNode == null) return "null";
         if (!pluginTokenIsObject)
+        {
+            var template = dNode.ContainsKey("Item")
+                ? dNode.Value<JObject>("Item")?.Value<string>("ConstructionTemplate")
+                : dNode.Value<string>("ConstructionTemplate");
+            if (template != null && pluginNode.Type != JTokenType.Array)
+                return Smart.Format(template, new { RAW = pluginNode });
             return pluginNode.Type switch
             {
                 JTokenType.Boolean => pluginNode.Value<bool>().ToString().ToLower(),
                 JTokenType.String => $"\"{pluginNode.Value<string>()}\"",
                 JTokenType.Array => "[" + string.Join(",",
-                    pluginNode.Values().Select(x => GetValue(dNode, x, pluginTokenIsObject)).ToList()) + "]",
+                    pluginNode.Values().Select(x => GetValue(dNode, x, pluginTokenIsObject, entryPoints, depth + 1))
+                        .ToList()) + "]",
                 _ => $"{pluginNode}",
             };
+        }
+
         var attrs = new List<string>();
+        var constructionTemplate = dNode.ContainsKey("Item")
+            ? dNode.Value<JObject>("Item")?.Value<string>("ConstructionTemplate")
+            : dNode.Value<string>("ConstructionTemplate");
+
+        if (constructionTemplate != null && pluginNode is JObject plugin)
+        {
+            var res = Smart.Format(constructionTemplate, plugin.ToObject<ExpandoObject>());
+            Console.WriteLine(res);
+            return res;
+        }
+
         foreach (var item in dNode.Value<JObject>("Properties")!)
         {
             var dObj = item.Value!.Value<JObject>()!;
 
             var name = dObj.Value<string>("PropertyGroupName");
             var entryPointName = dObj.Value<string>("EntryPointName");
-            if (entryPointName != null && EntryPoints.ContainsKey(entryPointName) &&
-                EntryPoints[entryPointName].Count > 0)
+            if (entryPointName != null && entryPoints.ContainsKey(entryPointName) &&
+                entryPoints[entryPointName].Count > 0)
             {
-                if (dNode.ContainsKey("Item"))
+                if (dObj.ContainsKey("Item"))
                     attrs.Add($"{name} = [" +
-                              string.Join(",", EntryPoints[entryPointName].Select(x => $"typeof({x})")) + "]");
-                else attrs.Add($"{name} = typeof({EntryPoints[entryPointName][0]})");
+                              string.Join(",", entryPoints[entryPointName].Select(x => $"typeof({x})")) + "]");
+                else attrs.Add($"{name} = typeof({string.Join("", entryPoints[entryPointName])})");
                 continue;
             }
 
             var pluginObj = pluginNode.Value<JObject>()!;
             if (name == null) continue;
             var pluginValue = pluginObj.ContainsKey(name) ? pluginObj.GetValue(name) : new JObject();
-            var token = GetValue(dObj, pluginValue, dObj.ContainsKey("Properties"), depth + 1);
+
+            var token = GetValue(dObj, pluginValue, dObj.ContainsKey("Properties"), entryPoints, depth + 1);
             if (token == "{}") continue;
             attrs.Add($"{name} = {token}");
             if (name == "Id" && _pluginId == "") _pluginId = token;
@@ -58,12 +84,17 @@ public class PluginMetaGenTest
 
         var indent = "\n\t\t\t" + new string('\t', depth + 1);
         var resultIndent = "\n\t\t\t" + new string('\t', depth);
+        if (_buildIn && depth == 0)
+        {
+            attrs.Add($"BuiltIn = {_buildIn.ToString().ToLower()}");
+        }
+
         var result = string.Join(",", attrs.Select(attr => indent + attr));
         var newType = dNode.Value<string>("Type")!;
         return $"new {newType}{resultIndent}{{{result}{resultIndent}}}";
     }
 
-    
+
     [Test]
     public void Test1()
     {
@@ -176,6 +207,7 @@ public class PluginMetaGenTest
                                         }
                                       },
                                       "AffiliationTag": {
+                                        "ConstructionTemplate": "new PluginDependency({Name})",
                                         "Type": "ShadowViewer.Core.Models.ShadowTag",
                                         "Required": false,
                                         "PropertyGroupName": "AffiliationTag",
@@ -256,7 +288,8 @@ public class PluginMetaGenTest
                                         "Nullable": false,
                                         "Item": {
                                           "Type": "System.String",
-                                          "Nullable": false
+                                          "Nullable": false,
+                                          "ConstructionTemplate": "new PluginDependency({RAW})"
                                         }
                                       }
                                     }
@@ -285,10 +318,14 @@ public class PluginMetaGenTest
                                     "Id": "Local",
                                     "Name": "本地阅读器",
                                     "Version": "1.3.15",
-                                    "Dependencies": []
+                                    "Dependencies": [
+                                      "ShadowViewer.Plugin.Local>=1.3.19",
+                                      "ShadowExample.Plugin.World>=1.20.0",
+                                      "ShadowExample.Plugin.Tall=1.20.0"
+                                    ]
                                   }
                                   """);
-        var content = GetValue((JObject)define, plugin, true);
+        var content = GetValue((JObject)define, plugin, true, EntryPoints, 0);
         Console.WriteLine(content);
     }
 }

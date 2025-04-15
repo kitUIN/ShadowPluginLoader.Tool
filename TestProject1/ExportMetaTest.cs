@@ -3,7 +3,83 @@ using ShadowPluginLoader.Attributes;
 using ShadowPluginLoader.Tool;
 
 namespace TestProject1;
+public enum PluginDependencyComparer
+{
+  /// <summary>
+  /// =
+  /// </summary>
+  Same,
+  /// <summary>
+  /// &gt;=
+  /// </summary>
+  Greater,
+  /// <summary>
+  /// &lt;=
+  /// </summary>
+  Lesser,
+}
 
+/// <summary>
+/// 
+/// </summary>
+public class PluginDependency
+{
+  /// <summary>
+  /// 
+  /// </summary>
+  public PluginDependency(string raw)
+  {
+    var comparer = ">=";
+    if (raw.Contains(">="))
+    {
+      comparer = ">=";
+    }else if (raw.Contains("<="))
+    {
+      comparer = "<=";
+    }
+    else
+    {
+      comparer = "=";
+    }
+    var rawParts = raw.Split(comparer);
+    if(rawParts.Length != 2) throw new Exception($"Invalid plugin dependency: {raw}");
+    Id = rawParts[0];
+    Version = new Version(rawParts[1]);
+    Comparer = comparer switch
+    {
+      "=" => PluginDependencyComparer.Same,
+      "<=" => PluginDependencyComparer.Lesser,
+      _ => PluginDependencyComparer.Greater
+    };
+  }
+  /// <summary>
+  /// 
+  /// </summary>
+  public PluginDependency(string id, string version, string comparer)
+  {
+    Id = id;
+    Version = new Version(version);
+    Comparer = comparer switch
+    {
+      "=" => PluginDependencyComparer.Same,
+      "<=" => PluginDependencyComparer.Lesser,
+      _ => PluginDependencyComparer.Greater
+    };
+  }
+  /// <summary>
+  /// 
+  /// </summary>
+  public string Id { get; set; }
+  /// <summary>
+  /// 
+  /// </summary>
+  public Version Version { get; set; }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  public PluginDependencyComparer Comparer { get; set; }
+}
 [ExportMeta]
 public class TestMetaData1
 {
@@ -101,6 +177,17 @@ public class TestMetaData5
 public class TestMetaData6
 {
     public TestGe<string, int> TestListString { get; init; }
+}
+[ExportMeta]
+public class TestMetaData8
+{
+    public PluginDependency[] TestEnumString { get; init; }
+}
+[ExportMeta]
+public class TestMetaData9
+{
+  [Meta(JsonType = typeof(string), ConstructionTemplate = "new PluginDependency({RAW})")]
+  public PluginDependency TestString { get; init; }
 }
 
 public class ExportMetaTest
@@ -638,10 +725,6 @@ public class ExportMetaTest
                                               "Required": true,
                                               "PropertyGroupName": "TestListString",
                                               "Nullable": false,
-                                              "GenericType": [
-                                                "System.String",
-                                                "System.Int32"
-                                              ],
                                               "Properties": {}
                                             }
                                           }
@@ -700,5 +783,69 @@ public class ExportMetaTest
                                           }
                                         }
                                         """));
+    }
+
+    [Test]
+    public void Test8()
+    {
+      var content = ExportMetaMethod.ExportMeta(typeof(TestMetaData8));
+      Assert.That(content,Is.EqualTo("""
+                                     {
+                                       "Type": "TestProject1.TestMetaData8",
+                                       "Properties": {
+                                         "TestEnumString": {
+                                           "Type": "System.Array",
+                                           "Required": true,
+                                           "PropertyGroupName": "TestEnumString",
+                                           "Nullable": false,
+                                           "Item": {
+                                             "Type": "TestProject1.PluginDependency",
+                                             "Nullable": false,
+                                             "Properties": {
+                                               "Id": {
+                                                 "Type": "System.String",
+                                                 "Required": true,
+                                                 "PropertyGroupName": "Id",
+                                                 "Nullable": false
+                                               },
+                                               "Version": {
+                                                 "Type": "System.Version",
+                                                 "Required": true,
+                                                 "PropertyGroupName": "Version",
+                                                 "Nullable": false
+                                               },
+                                               "Comparer": {
+                                                 "Type": "TestProject1.PluginDependencyComparer",
+                                                 "Required": true,
+                                                 "PropertyGroupName": "Comparer",
+                                                 "Nullable": false,
+                                                 "Properties": {}
+                                               }
+                                             }
+                                           }
+                                         }
+                                       }
+                                     }
+                                     """));
+    }
+    
+    [Test]
+    public void Test9()
+    {
+      var content = ExportMetaMethod.ExportMeta(typeof(TestMetaData9));
+      Assert.That(content,Is.EqualTo("""
+                                     {
+                                       "Type": "TestProject1.TestMetaData9",
+                                       "Properties": {
+                                         "TestString": {
+                                           "Type": "System.String",
+                                           "Required": true,
+                                           "PropertyGroupName": "TestString",
+                                           "Nullable": false,
+                                           "ConstructionTemplate": "new PluginDependency({RAW})"
+                                         }
+                                       }
+                                     }
+                                     """));
     }
 }

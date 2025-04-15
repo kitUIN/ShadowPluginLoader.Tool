@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -8,40 +7,6 @@ using System.Text.Json.Nodes;
 using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
-
-public record UnKnownType(bool Nullable, string? TypeName, Type? PropertyType)
-{
-    public static UnKnownType Check(PropertyInfo property)
-    {
-        string? typeName;
-        bool isNullable;
-        Type type;
-        var nullType = System.Nullable.GetUnderlyingType(property.PropertyType);
-        if (nullType != null)
-        {
-            typeName = nullType.FullName;
-            isNullable = true;
-            type = nullType;
-        }
-        else
-        {
-            isNullable = property.CustomAttributes
-                .Any(attr => attr.AttributeType.Name == "NullableAttribute");
-            typeName = property.PropertyType.FullName;
-            type = property.PropertyType;
-        }
-
-        return new UnKnownType(isNullable, typeName, type);
-    }
-
-    public static UnKnownType Check(Type type)
-    {
-        var nullType = System.Nullable.GetUnderlyingType(type);
-        return nullType == null
-            ? new UnKnownType(false, type.FullName, type)
-            : new UnKnownType(true, nullType.FullName, nullType);
-    }
-}
 
 public static class ExportMetaMethod
 {
@@ -62,7 +27,10 @@ public static class ExportMetaMethod
             if (property.Name == "TypeId" && property.PropertyType == typeof(object)) continue;
             var m = property.GetCustomAttribute<MetaAttribute>();
             if (m is { Exclude: true }) continue;
-            var propertyType = PropertyTypeInfo.Analyze(m?.JsonType ?? property.PropertyType);
+
+            var propertyType = m?.JsonType != null
+                ? PropertyTypeInfo.Analyze(m.JsonType)
+                : PropertyTypeInfo.Analyze(property);
             var isArray = propertyType is { IsArray: true, ItemType: not null };
             var prop = new JsonObject()
             {
@@ -85,7 +53,8 @@ public static class ExportMetaMethod
                     prop["Item"]!["Properties"] = Properties2JsonObject(propertyType.ItemType!.RawType,
                         prefix + prop["PropertyGroupName"] + ".");
                 }
-            }else if (!ReadMetaMethod.SupportType.Contains(propertyType.TypeName))
+            }
+            else if (!ReadMetaMethod.SupportType.Contains(propertyType.TypeName))
                 prop["Properties"] = Properties2JsonObject(propertyType.RawType,
                     prefix + prop["PropertyGroupName"] + ".");
 
@@ -121,6 +90,7 @@ public static class ExportMetaMethod
                     else
                         prop["Regex"] = m.Regex;
                 }
+
                 if (!string.IsNullOrEmpty(m.ConstructionTemplate))
                 {
                     if (isArray)
@@ -128,6 +98,7 @@ public static class ExportMetaMethod
                     else
                         prop["ConstructionTemplate"] = m.ConstructionTemplate;
                 }
+
                 if (!string.IsNullOrEmpty(m.EntryPointName))
                 {
                     prop["EntryPointName"] = m.EntryPointName;
@@ -142,7 +113,8 @@ public static class ExportMetaMethod
                     prop["Regex"] = value;
             props[property.Name] = prop;
             var name = isArray
-                ? $"{propertyType.TypeName}<{propertyType.ItemType!.TypeName}" + (propertyType.ItemType!.IsNullable ? "?" : "") + ">"
+                ? $"{propertyType.TypeName}<{propertyType.ItemType!.TypeName}" +
+                  (propertyType.ItemType!.IsNullable ? "?" : "") + ">"
                 : propertyType.TypeName + (propertyType.IsNullable ? "?" : "");
             Logger.Log($"{prefix}{property.Name}: {name} -> plugin.d.json");
         }

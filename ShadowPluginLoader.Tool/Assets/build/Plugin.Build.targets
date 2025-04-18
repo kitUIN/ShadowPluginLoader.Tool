@@ -1,5 +1,6 @@
 <Project>
     <PropertyGroup>
+        <PlatformTarget>AnyCPU</PlatformTarget>
         <!-- Exclude File -->
         <ExcludeFile Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
         <ExcludeFile Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>

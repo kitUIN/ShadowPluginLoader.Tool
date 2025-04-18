@@ -1,8 +1,8 @@
 ﻿using System.Dynamic;
 using System.Text.Json.Nodes;
 using Newtonsoft.Json;
+using Scriban;
 using Newtonsoft.Json.Linq;
-using SmartFormat;
 
 namespace TestProject1;
 
@@ -32,7 +32,10 @@ public class PluginMetaGenTest
                 ? dNode.Value<JObject>("Item")?.Value<string>("ConstructionTemplate")
                 : dNode.Value<string>("ConstructionTemplate");
             if (template != null && pluginNode.Type != JTokenType.Array)
-                return Smart.Format(template, new { RAW = pluginNode });
+            {
+                return Template.Parse(template).Render(new { RAW = pluginNode.ToString() }, member => member.Name);
+            }
+
             return pluginNode.Type switch
             {
                 JTokenType.Boolean => pluginNode.Value<bool>().ToString().ToLower(),
@@ -51,7 +54,7 @@ public class PluginMetaGenTest
 
         if (constructionTemplate != null && pluginNode is JObject plugin)
         {
-            var res = Smart.Format(constructionTemplate, plugin.ToObject<ExpandoObject>());
+            var res = Template.Parse(constructionTemplate).Render(plugin.ToObject<ExpandoObject>());
             Console.WriteLine(res);
             return res;
         }
@@ -207,7 +210,7 @@ public class PluginMetaGenTest
                                         }
                                       },
                                       "AffiliationTag": {
-                                        "ConstructionTemplate": "new PluginDependency({Name})",
+                                        "ConstructionTemplate": "new PluginDependency({{Name}})",
                                         "Type": "ShadowViewer.Core.Models.ShadowTag",
                                         "Required": false,
                                         "PropertyGroupName": "AffiliationTag",
@@ -289,7 +292,7 @@ public class PluginMetaGenTest
                                         "Item": {
                                           "Type": "System.String",
                                           "Nullable": false,
-                                          "ConstructionTemplate": "new PluginDependency({RAW})"
+                                          "ConstructionTemplate": "new PluginDependency({{RAW}})"
                                         }
                                       }
                                     }

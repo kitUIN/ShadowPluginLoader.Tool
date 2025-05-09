@@ -37,29 +37,17 @@ public static class EntryPointLoad
 
         var jsonString = File.ReadAllText(pluginJsonFile);
         if (JsonNode.Parse(jsonString) is not JsonObject jsonObject) return;
-        var entryPoints = new JsonObject();
-        var dict = new Dictionary<string, List<string>>();
+        var entryPoints = new JsonArray(); 
         foreach (var entryPointType in entryPointTypes)
         {
             var entryPoint = entryPointType.GetCustomAttribute<EntryPointAttribute>();
             if (entryPoint is null) continue;
-            if (dict.ContainsKey(entryPoint.Name))
+            entryPoints.Add(new JsonObject
             {
-                dict[entryPoint.Name].Add(entryPointType.FullName!);
-            }
-            else
-            {
-                dict.Add(entryPoint.Name, [entryPointType.FullName!]);
-            }
-        }
-
-        foreach (var d in dict)
-        {
-            entryPoints[d.Key] = d.Value.Count > 1
-                ? new JsonArray(d.Value.Select(entry => JsonValue.Create(entry)!).ToArray<JsonNode?>())
-                : d.Value[0];
-
-            Logger.Log($"Inject {d.Key}: [{string.Join(',', d.Value)}] -> EntryPoints(plugin.json)");
+                ["Name"] = entryPoint.Name,
+                ["Type"] = entryPointType.FullName
+            });
+            Logger.Log($"Inject {entryPointType.FullName} -> [{entryPoint.Name}]EntryPoints(plugin.json)");
         }
 
         jsonObject["EntryPoints"] = entryPoints;

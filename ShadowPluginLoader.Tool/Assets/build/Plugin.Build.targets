@@ -53,7 +53,7 @@
         <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration) $(DefaultExclude) $(PluginMisxPackage)"
               ConsoleToMSBuild="True"/>
         <Exec Condition="$(AppCertPath) != '' and $(PluginMisxPackage)"
-              Command="powershell -file $(MSBuildThisFileDirectory)PackageMsix.ps1 $(PluginPackagePath) $(PluginPackageName).msix $(AppCertPath) $(AppCertPassword)"
+              Command="powershell -file $(MSBuildThisFileDirectory)PackageMsix.ps1 $(PluginPackagePath) $(PluginPackageName).msix $(OutputDir) $(AppCertPath) $(AppCertPassword)"
                 ConsoleToMSBuild="True"/>
     </Target>
     

@@ -20,3 +20,5 @@ Remove-Item $packagePath -ErrorAction Ignore
 #create a signed package from the target directory
 makeappx pack /o /d $targetDirectory /p $packagePath
 signtool sign /fd SHA256 /a /f $certificatePath /p $certificatePassword $packagePath
+
+Write-Output "Package Msix Successed: $packagePath"

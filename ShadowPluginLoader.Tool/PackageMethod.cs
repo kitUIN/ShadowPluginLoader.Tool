@@ -29,8 +29,8 @@ public static class PackageMethod
     }
 
     public static void Exclude(string startPath, string excludePath, 
-        string zipDir, string zipName,string zipExt,string configuration,
-        bool defaultExclude)
+        string zipDir, string zipName,string zipExt, string configuration,
+        bool defaultExclude,bool shouldZip=true)
     {
         var zipPath = Path.Combine(zipDir, $"{zipName}{(configuration == "Debug" ? "-Debug" : "")}{zipExt}");
         if (File.Exists(zipPath)) File.Delete(zipPath);
@@ -62,6 +62,7 @@ public static class PackageMethod
         }
 
         CheckFolderEmpty(startPath);
+        if (!shouldZip) return;
         Zip(startPath, zipPath);
     }
     private static void CheckFolderEmpty(string path)

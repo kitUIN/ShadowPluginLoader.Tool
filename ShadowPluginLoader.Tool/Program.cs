@@ -19,7 +19,7 @@ internal class Program
     private static readonly string[] ArgNames2 =
     [
         "Method", "OutputPath", "ExcludesFile",
-        "zipPath", "zipName", "zipExt", "Configuration", "defaultExclude"
+        "zipPath", "zipName", "zipExt", "Configuration", "defaultExclude", "needMsix"
     ];
 
     private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
@@ -93,9 +93,10 @@ internal class Program
                     var zipExt = args[5]; // zipExt
                     var configuration = args[6]; // Configuration
                     var defaultExclude = Convert.ToBoolean(args[7]);
+                    var shouldZip = Convert.ToBoolean(args[8]);
                     PackageMethod.Exclude(outputPath, excludesFile,
                         zipPath, zipName, zipExt, configuration,
-                        defaultExclude);
+                        defaultExclude, shouldZip);
                     break;
                 }
                 case "3":

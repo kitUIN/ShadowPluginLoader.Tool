@@ -93,10 +93,10 @@ internal class Program
                     var zipExt = args[5]; // zipExt
                     var configuration = args[6]; // Configuration
                     var defaultExclude = Convert.ToBoolean(args[7]);
-                    var shouldZip = Convert.ToBoolean(args[8]);
+                    var needMsix = Convert.ToBoolean(args[8]);
                     PackageMethod.Exclude(outputPath, excludesFile,
                         zipPath, zipName, zipExt, configuration,
-                        defaultExclude, shouldZip);
+                        defaultExclude, needMsix);
                     break;
                 }
                 case "3":

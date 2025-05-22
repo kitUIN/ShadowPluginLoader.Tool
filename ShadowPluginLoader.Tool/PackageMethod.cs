@@ -62,7 +62,6 @@ public static class PackageMethod
         }
 
         CheckFolderEmpty(startPath);
-        if (needMsix) return;
         Zip(startPath, zipPath);
     }
     private static void CheckFolderEmpty(string path)

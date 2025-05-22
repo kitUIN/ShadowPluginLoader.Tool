@@ -7,7 +7,7 @@
         <IsPlugin>false</IsPlugin>
         <!-- Auto Pack Plugin When IsPlugin == True-->
         <AutoPluginPackage>true</AutoPluginPackage>
-        <!-- Package Type: False For Zip (Default); True for msix(Need Cert), 
+        <!-- Package Type: False For Zip (Default); True for Zip && Msix(Need Cert), 
         And Need AppCertPath and AppCertPassword -->
         <PluginMisxPackage>false</PluginMisxPackage>
         <!-- Auto Generate I18N -->

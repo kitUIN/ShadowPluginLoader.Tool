@@ -32,13 +32,13 @@
         <AdditionalFiles Include="$(ProjectDir)plugin.json"/>
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
-    <Target Name="ReadMetaData" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFile) &quot;$(PluginMeta)&quot; $(AssemblyName)"
+    <Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) &quot;$(PluginMeta)&quot; $(OutputFile)"
               ConsoleToMSBuild="True"/>
     </Target>
 
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
-    <Target Name="CopyPluginDFiles" BeforeTargets="ReadMetaData"
+    <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
             Condition="Exists('$(PluginDFile)') ">
         <!-- PluginDFile is from `Loaders.Build.props` -->
         <Copy SourceFiles="$(PluginDFile)"
@@ -55,10 +55,5 @@
         <Exec Condition="$(AppCertPath) != '' and $(PluginMisxPackage)"
               Command="powershell -file $(MSBuildThisFileDirectory)PackageMsix.ps1 $(PluginPackagePath) $(PluginPackageName).msix $(OutputDir) $(AppCertPath) $(AppCertPassword)"
                 ConsoleToMSBuild="True"/>
-    </Target>
-    
-    <Target Name="PatchPlugin" BeforeTargets="PackagePlugin" >
-        <Exec Command="dotnet $(ToolExeFile) 3 $(ProjectDir) $(OutputFile)"
-              ConsoleToMSBuild="True"/>
     </Target>
 </Project>

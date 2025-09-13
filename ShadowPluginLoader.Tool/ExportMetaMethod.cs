@@ -1,139 +1,229 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Xml;
+using System.Xml.Linq;
 using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
 
 public static class ExportMetaMethod
 {
-    private static Dictionary<string, string> Regexs { get; } = new()
+    /// <summary>
+    /// 导出 JSON 结构文件，每个成员对应一个 JSON 对象
+    /// </summary>
+    /// <param name="type">要导出的类型</param>
+    /// <returns>JSON 结构字符串</returns>
+    public static string ExportMetaToJson(Type type)
     {
-        ["System.TimeSpan"] = @"^(\d\.)?(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.\d{1,7})?$",
-        ["System.Guid"] = @"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
-    };
+        var root = new JsonObject
+        {
+            ["Type"] = type.FullName,
+            ["Properties"] = new JsonObject()
+        };
 
-
-    private static JsonObject Properties2JsonObject(Type type, string prefix = "")
-    {
         var properties = type.GetProperties();
-        var props = new JsonObject();
         foreach (var property in properties)
         {
             // 忽略TypeId,Object
             if (property.Name == "TypeId" && property.PropertyType == typeof(object)) continue;
             var m = property.GetCustomAttribute<MetaAttribute>();
-            if (m is { Exclude: true }) continue;
+            if (m is null or { Exclude: true }) continue;
 
-            var propertyType = m?.JsonType != null
-                ? PropertyTypeInfo.Analyze(m.JsonType)
-                : PropertyTypeInfo.Analyze(property);
+            var propertyType = PropertyTypeInfo.Analyze(property);
+
             var isArray = propertyType is { IsArray: true, ItemType: not null };
-            var prop = new JsonObject()
+            var element = new JsonObject
             {
+                // 添加属性信息
                 ["Type"] = propertyType.TypeName,
                 ["Required"] = m?.Required ?? true,
-                ["PropertyGroupName"] = string.IsNullOrEmpty(m?.PropertyGroupName)
-                    ? property.Name
-                    : m.PropertyGroupName,
-                ["Nullable"] = propertyType.IsNullable,
+                ["Nullable"] = propertyType.IsNullable
             };
+
+            if (!string.IsNullOrEmpty(m?.PropertyGroupName))
+            {
+                element["PropertyGroupName"] = m.PropertyGroupName;
+            }
+
+            if (!string.IsNullOrEmpty(m?.Regex))
+            {
+                element["Regex"] = m.Regex;
+            }
+
+            // 处理数组类型
             if (isArray)
             {
-                prop["Item"] = new JsonObject()
+                element["IsArray"] = true;
+
+                // ItemType 作为对象，包含完整的类型信息
+                var itemTypeInfo = new JsonObject
                 {
                     ["Type"] = propertyType.ItemType!.TypeName,
+                    ["Required"] = true, // 数组项默认必需
                     ["Nullable"] = propertyType.ItemType!.IsNullable,
+                    ["DefaultValue"] = GetDefaultValue(propertyType.ItemType!.TypeName)
                 };
+
+                // 如果数组项是自定义类型，添加 Properties
                 if (!ReadMetaMethod.SupportType.Contains(propertyType.ItemType!.TypeName))
                 {
-                    prop["Item"]!["Properties"] = Properties2JsonObject(propertyType.ItemType!.RawType,
-                        prefix + prop["PropertyGroupName"] + ".");
+                    if (HasMetaAttributes(propertyType.ItemType!.RawType))
+                    {
+                        itemTypeInfo["Properties"] = AddPropertiesToJson(propertyType.ItemType!.RawType);
+                    }
                 }
+
+                element["ItemType"] = itemTypeInfo;
+                element["DefaultValue"] = "[]";
             }
             else if (!ReadMetaMethod.SupportType.Contains(propertyType.TypeName))
-                prop["Properties"] = Properties2JsonObject(propertyType.RawType,
-                    prefix + prop["PropertyGroupName"] + ".");
-
-            if (propertyType.GenericArguments.Count > 0)
             {
-                // prop["GenericType"] = genericTypes;
+                // 自定义类型，递归处理属性
+                element["Properties"] = AddPropertiesToJson(propertyType.RawType);
+            }
+            else
+            {
+                // 基本类型，添加示例值
+                element["DefaultValue"] = GetDefaultValue(propertyType.TypeName);
             }
 
-            if (propertyType.TypeName is "System.DateTimeOffset" or "System.DateTime" &&
-                property.GetCustomAttribute<MetaDateTimeAttribute>() is { } dateTimeAttr &&
-                (dateTimeAttr.Format != null || !dateTimeAttr.InvariantCulture))
-            {
-                if (isArray)
-                    prop["Item"]!["DateTime"] = new JsonObject()
-                    {
-                        ["Format"] = dateTimeAttr.Format,
-                        ["InvariantCulture"] = dateTimeAttr.InvariantCulture
-                    };
-                else
-                    prop["DateTime"] = new JsonObject()
-                    {
-                        ["Format"] = dateTimeAttr.Format,
-                        ["InvariantCulture"] = dateTimeAttr.InvariantCulture
-                    };
-            }
-
-            if (m is not null)
-            {
-                if (!string.IsNullOrEmpty(m.Regex))
-                {
-                    if (isArray)
-                        prop["Item"]!["Regex"] = m.Regex;
-                    else
-                        prop["Regex"] = m.Regex;
-                }
-
-                if (!string.IsNullOrEmpty(m.ConstructionTemplate))
-                {
-                    if (isArray)
-                        prop["Item"]!["ConstructionTemplate"] = m.ConstructionTemplate;
-                    else
-                        prop["ConstructionTemplate"] = m.ConstructionTemplate;
-                }
-
-                if (!string.IsNullOrEmpty(m.EntryPointName))
-                {
-                    prop["EntryPointName"] = m.EntryPointName;
-                }
-            }
-
-            if (!prop.ContainsKey("Regex") &&
-                Regexs.TryGetValue(isArray ? propertyType.ItemType!.TypeName! : propertyType.TypeName, out var value))
-                if (propertyType is { IsArray: true, ItemType: not null })
-                    prop["Item"]!["Regex"] = value;
-                else
-                    prop["Regex"] = value;
-            props[property.Name] = prop;
-            var name = isArray
-                ? $"{propertyType.TypeName}<{propertyType.ItemType!.TypeName}" +
-                  (propertyType.ItemType!.IsNullable ? "?" : "") + ">"
-                : propertyType.TypeName + (propertyType.IsNullable ? "?" : "");
-            Logger.Log($"{prefix}{property.Name}: {name} -> plugin.d.json");
+            root["Properties"]![property.Name] = element;
         }
 
-        return props;
-    }
-
-    public static string ExportMeta(Type type)
-    {
-        JsonNode root = new JsonObject
+        var options = new JsonSerializerOptions
         {
-            ["Type"] = type.FullName,
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
-        var props = Properties2JsonObject(type);
-        root["Properties"] = props;
-        var options = new JsonSerializerOptions { WriteIndented = true };
 #if NET7_0_OR_GREATER
         options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
 #endif
         return root.ToJsonString(options);
+    }
+
+    /// <summary>
+    /// 递归添加属性到 JSON 对象
+    /// </summary>
+    private static JsonObject AddPropertiesToJson(Type type)
+    {
+        var result = new JsonObject();
+        var properties = type.GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "TypeId" && property.PropertyType == typeof(object)) continue;
+            var m = property.GetCustomAttribute<MetaAttribute>();
+            if (m is null or { Exclude: true }) continue;
+
+            var propertyType = PropertyTypeInfo.Analyze(property);
+
+            var isArray = propertyType is { IsArray: true, ItemType: not null };
+            var element = new JsonObject
+            {
+                ["Type"] = propertyType.TypeName,
+                ["Required"] = m?.Required ?? true,
+                ["Nullable"] = propertyType.IsNullable
+            };
+
+            if (!string.IsNullOrEmpty(m?.PropertyGroupName))
+            {
+                element["PropertyGroupName"] = m.PropertyGroupName;
+            }
+
+            if (!string.IsNullOrEmpty(m?.Regex))
+            {
+                element["Regex"] = m.Regex;
+            }
+
+            if (isArray)
+            {
+                element["IsArray"] = true;
+
+                // ItemType 作为对象，包含完整的类型信息
+                var itemTypeInfo = new JsonObject
+                {
+                    ["Type"] = propertyType.ItemType!.TypeName,
+                    ["Required"] = true, // 数组项默认必需
+                    ["Nullable"] = propertyType.ItemType!.IsNullable,
+                    ["DefaultValue"] = GetDefaultValue(propertyType.ItemType!.TypeName)
+                };
+
+                // 如果数组项是自定义类型，添加 Properties
+                if (!ReadMetaMethod.SupportType.Contains(propertyType.ItemType!.TypeName))
+                {
+                    if (HasMetaAttributes(propertyType.ItemType!.RawType))
+                    {
+                        itemTypeInfo["Properties"] = AddPropertiesToJson(propertyType.ItemType!.RawType);
+                    }
+                }
+
+                element["ItemType"] = itemTypeInfo;
+                element["DefaultValue"] = "";
+            }
+            else if (!ReadMetaMethod.SupportType.Contains(propertyType.TypeName))
+            {
+                element["Properties"] = AddPropertiesToJson(propertyType.RawType);
+            }
+            else
+            {
+                element["DefaultValue"] = GetDefaultValue(propertyType.TypeName);
+            }
+
+            result[property.Name] = element;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 检查类型是否有任何属性带有 MetaAttribute
+    /// </summary>
+    private static bool HasMetaAttributes(Type type)
+    {
+        var properties = type.GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "TypeId" && property.PropertyType == typeof(object)) continue;
+            var m = property.GetCustomAttribute<MetaAttribute>();
+            if (m != null && !m.Exclude)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 获取类型的默认值
+    /// </summary>
+    private static string GetDefaultValue(string typeName)
+    {
+        return typeName switch
+        {
+            "System.String" => "",
+            "System.Int32" => "0",
+            "System.UInt32" => "0",
+            "System.Int16" => "0",
+            "System.UInt16" => "0",
+            "System.Int64" => "0",
+            "System.UInt64" => "0",
+            "System.Boolean" => "false",
+            "System.Single" => "0.0",
+            "System.Double" => "0.0",
+            "System.Decimal" => "0.0",
+            "System.Char" => "",
+            "System.SByte" => "0",
+            "System.Byte" => "0",
+            "System.DateTime" => DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+            "System.DateTimeOffset" => DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:ssK"),
+            "System.TimeSpan" => "00:00:00",
+            "System.Guid" => Guid.NewGuid().ToString(),
+            "System.Version" => "1.0.0.0",
+            _ => ""
+        };
     }
 }

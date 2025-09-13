@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.Attributes;
+namespace ShadowPluginLoader.Attributes;
 
 /// <summary>
 /// Used to mark a property as a meta attribute.
@@ -25,19 +25,14 @@ public class MetaAttribute : Attribute
     /// Using Regex To Validate
     /// </summary>
     public string? Regex { get; init; }
-
-    /// <summary>
-    /// EntryPoint Name
-    /// </summary>
-    public string? EntryPointName { get; init; }
-
-    /// <summary>
-    /// Type in plugin.json
-    /// </summary>
-    public Type? JsonType { get; init; }  
     
     /// <summary>
-    /// Construction Template
+    /// Custom Converter Type.
     /// </summary>
-    public string? ConstructionTemplate { get; init; }
+    public Type? Converter { get; init; }
+
+    /// <summary>
+    /// Json Type As String
+    /// </summary>
+    public bool AsString { get; init; } = false;
 }

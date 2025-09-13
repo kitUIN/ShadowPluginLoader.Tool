@@ -25,22 +25,22 @@ public static class ReadMetaMethod
         "System.Decimal", "System.Decimal[]",
         "System.String", "System.String[]",
         "System.Char", "System.Char[]",
-        "System.SByte", "System.SByte[]",
-        "System.Type", "System.Type[]",
-        "System.DateTime", "System.DateTime[]",
-        "System.DateTimeOffset", "System.DateTimeOffset[]",
-        "System.TimeSpan", "System.TimeSpan[]",
-        "System.Guid", "System.Guid[]",
-        "System.Byte", "System.Byte[]",
-        "System.Version", "System.Version[]",
+        // "System.SByte", "System.SByte[]",
+        // "System.Type", "System.Type[]",
+        // "System.DateTime", "System.DateTime[]",
+        // "System.DateTimeOffset", "System.DateTimeOffset[]",
+        // "System.TimeSpan", "System.TimeSpan[]",
+        // "System.Guid", "System.Guid[]",
+        // "System.Byte", "System.Byte[]",
+        // "System.Version", "System.Version[]",
     ];
 
-    public static JsonNode GetDefineJson(string projectPath)
+    public static JsonObject GetDefineJson(string projectPath)
     {
         var file = Path.Combine(projectPath, "plugin.d.json");
         if (!File.Exists(file))
             throw new Exception($"Missing {projectPath}plugin.d.json");
-        return JsonNode.Parse(File.ReadAllText(file))!;
+        return (JsonObject) JsonNode.Parse(File.ReadAllText(file))!;
     }
 
     private static void WarnDependencies()
@@ -68,155 +68,304 @@ public static class ReadMetaMethod
         foreach (XmlNode dependency in dependencies)
         {
             var name = dependency.Attributes!["Include"]?.Value;
-            var version = dependency.Attributes!["Version"]?.Value;
-            var label = dependency.Attributes?["Label"]?.Value;
+            var label = dependency.Attributes?["Need"]?.Value;
 
             if (string.IsNullOrWhiteSpace(name))
                 continue;
-
-            string depString;
-
-            if (!string.IsNullOrWhiteSpace(label))
+            arrays.Add(new JsonObject
             {
-                // 校验 Label 格式，只允许 >= 或 <= 开头
-                if (label.StartsWith(">=") || label.StartsWith("<=")|| label.StartsWith("="))
-                {
-                    depString = $"{name}{label}";
-                }
-                else
-                {
-                    throw new Exception($"Invalid Label format for dependency '{name}': '{label}' (must start with '>=' or '<=' or '=').");
-                }
-            }
-            else if (!string.IsNullOrWhiteSpace(version))
-            {
-                depString = $"{name}>={version}";
-            }
-            else
-            {
-                continue; // 如果既没有 label 也没有 version，就跳过
-            }
-
-            arrays.Add(depString);
+                ["Name"] = name,
+                ["Need"] = label
+            });
         }
 
         return arrays;
     }
 
-    private static JsonValue GetVale(string type, string value)
-    {
-        return type switch
-        {
-            "System.Int32" => JsonValue.Create(Convert.ToInt32(value)),
-            "System.UInt32" => JsonValue.Create(Convert.ToUInt32(value)),
-            "System.Int16" => JsonValue.Create(Convert.ToInt16(value)),
-            "System.UInt16" => JsonValue.Create(Convert.ToUInt16(value)),
-            "System.Int64" => JsonValue.Create(Convert.ToInt64(value)),
-            "System.UInt64" => JsonValue.Create(Convert.ToUInt64(value)),
-            "System.Boolean" => JsonValue.Create(Convert.ToBoolean(value)),
-            "System.Single" => JsonValue.Create(Convert.ToSingle(value)),
-            "System.Double" => JsonValue.Create(Convert.ToDouble(value)),
-            "System.Decimal" => JsonValue.Create(Convert.ToDecimal(value)),
-            _ => JsonValue.Create(value)!,
-        };
-    }
 
-    public static string CheckJsonRequired(JsonObject json, XmlNode root, XmlNode propertyGroup, string dllName)
+    public static JsonObject CheckJsonRequired(JsonObject structureJson, XmlNode xmlDoc,
+        XmlNode propertyGroup, string dllFilePath)
     {
-        var res = new JsonObject
-        {
-            ["DllName"] = dllName
-        };
-        foreach (var node in json["Properties"]!.AsObject())
-        {
-            if (res.ContainsKey(node.Key)) continue;
-            var j = LoadProperty(propertyGroup, (JsonObject)node.Value!);
-            if (j is JsonObject { Count: 0 } or JsonArray { Count: 0 }) continue;
-            res[node.Key] = j;
-        }
-
+        var dllName = Path.GetFileNameWithoutExtension(dllFilePath);
+        var structure = structureJson["Properties"]!.AsObject();
+        var res = (JsonObject)ConvertXmlToJsonWithValidation(propertyGroup, structure);
+        res["DllName"] = dllName;
         if (!res.ContainsKey("Dependencies")) res["Dependencies"] = new JsonArray();
 
-        foreach (var dep in LoadDependencies(root))
+        foreach (var dep in LoadDependencies(xmlDoc))
         {
             ((JsonArray)res["Dependencies"]!).Add(dep!.GetValue<string>());
         }
 
-        var options = new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
-        };
-#if NET7_0
-        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
-#endif
-        return res.ToJsonString(options);
+        return res;
     }
 
-    private static JsonNode LoadProperty(XmlNode propertyGroup, JsonObject current)
-    {
-        var isArray = current.ContainsKey("Item");
-        var type = current["Type"]!.GetValue<string>();
-        JsonNode res = isArray ? new JsonArray() : new JsonObject();
-        var propertyGroupName = current["PropertyGroupName"]!.GetValue<string>();
-        var property = propertyGroup.SelectSingleNode(propertyGroupName);
-        if (property is null)
-        {
-            if (current["Required"]!.GetValue<bool>())
-                throw new Exception($"Missing Required Property {propertyGroupName} In <{propertyGroup.Name}>");
-            return res;
-        }
 
-        if (!isArray)
+    /// <summary>
+    /// 从 JSON 数据文件根据结构文件转换为类结构并保存为 JSON
+    /// </summary>
+    /// <param name="dataFilePath">数据文件路径（JSON 格式）</param>
+    /// <param name="structureFilePath">结构文件路径（JSON 格式）</param>
+    /// <param name="outputJsonPath">输出 JSON 文件路径</param>
+    public static void JsonToJson(string dataFilePath, string structureFilePath, string outputJsonPath)
+    {
+        // 读取结构文件
+        var structureJson = JsonNode.Parse(System.IO.File.ReadAllText(structureFilePath))!;
+        var structure = structureJson["Properties"]!.AsObject();
+
+        // 读取数据文件
+        var dataJson = JsonNode.Parse(System.IO.File.ReadAllText(dataFilePath))!;
+
+        // 转换 JSON 到 JSON（根据结构验证和转换）
+        var result = ConvertJsonToJson(dataJson, structure);
+
+        // 保存为 JSON
+        var options = new JsonSerializerOptions
         {
-            if (current.ContainsKey("Properties") &&
-                current["Properties"] is JsonObject jsonProperties &&
-                jsonProperties.Count > 0)
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+#if NET7_0_OR_GREATER
+        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
+#endif
+        System.IO.File.WriteAllText(outputJsonPath, result.ToJsonString(options));
+    }
+
+    /// <summary>
+    /// 将 XML 节点转换为 JSON 对象（带验证）
+    /// </summary>
+    private static JsonNode ConvertXmlToJsonWithValidation(XmlNode xmlNode, JsonObject structure)
+    {
+        var result = new JsonObject();
+
+        foreach (var prop in structure)
+        {
+            var propertyName = prop.Key;
+            var propertyInfo = prop.Value!.AsObject();
+            var propertyGroupName = propertyInfo.ContainsKey("PropertyGroupName")
+                ? propertyInfo["PropertyGroupName"]!.GetValue<string>()
+                : propertyName;
+
+            var xmlElement = xmlNode.SelectSingleNode(propertyGroupName);
+            if (xmlElement == null)
             {
-                // 自定义类
-                foreach (var prop in jsonProperties)
+                if (propertyInfo["Required"]!.GetValue<bool>())
                 {
-                    var propValue = LoadProperty(property, (JsonObject)prop.Value!);
-                    if (propValue is JsonObject { Count: 0 }) continue;
-                    ((JsonObject)res)[prop.Key] = propValue;
+                    throw new Exception($"缺少必需的属性: {propertyGroupName}");
                 }
+
+                // 使用默认值
+                result[propertyName] = GetDefaultValueFromStructure(propertyInfo);
+                continue;
+            }
+
+            var isArray = propertyInfo.ContainsKey("IsArray") && propertyInfo["IsArray"]!.GetValue<bool>();
+
+            if (isArray)
+            {
+                result[propertyName] = ConvertXmlArrayToJson(xmlElement, propertyInfo);
+            }
+            else if (propertyInfo.ContainsKey("Properties"))
+            {
+                // 复杂对象
+                var subStructure = propertyInfo["Properties"]!.AsObject();
+                result[propertyName] = ConvertXmlToJsonWithValidation(xmlElement, subStructure);
             }
             else
             {
-                var value = property.InnerText;
-                // 值
-                if (current["Regex"] is null) return GetVale(type, value);
-                var regex = current["Regex"]!.GetValue<string>();
-                if (!Regex.IsMatch(value, regex))
+                // 简单值，使用结构文件中的类型信息进行转换
+                result[propertyName] = ConvertXmlValueToJson(xmlElement.InnerText, propertyInfo);
+            }
+        }
+
+        return result;
+    }
+
+
+    /// <summary>
+    /// 将 JSON 数据转换为根据结构验证的 JSON 对象
+    /// </summary>
+    private static JsonNode ConvertJsonToJson(JsonNode dataNode, JsonObject structure)
+    {
+        var result = new JsonObject();
+
+        foreach (var prop in structure)
+        {
+            var propertyName = prop.Key;
+            var propertyInfo = prop.Value!.AsObject();
+            var propertyGroupName = propertyInfo.ContainsKey("PropertyGroupName")
+                ? propertyInfo["PropertyGroupName"]!.GetValue<string>()
+                : propertyName;
+
+            if (!dataNode.AsObject().ContainsKey(propertyGroupName))
+            {
+                if (propertyInfo["Required"]!.GetValue<bool>())
                 {
-                    throw new Exception($"{propertyGroupName}: {value} Does Not Match Regex: {regex}");
+                    throw new Exception($"缺少必需的属性: {propertyGroupName}");
                 }
-                return GetVale(type, value);
+
+                continue;
+            }
+
+            var dataValue = dataNode[propertyGroupName];
+            var isArray = propertyInfo.ContainsKey("IsArray") && propertyInfo["IsArray"]!.GetValue<bool>();
+
+            if (isArray)
+            {
+                if (dataValue is JsonArray dataArray)
+                {
+                    var array = new JsonArray();
+                    var itemType = propertyInfo["ItemType"]!.GetValue<string>();
+
+                    foreach (var item in dataArray)
+                    {
+                        if (propertyInfo.ContainsKey("ItemProperties"))
+                        {
+                            // 复杂对象数组
+                            var itemStructure = propertyInfo["ItemProperties"]!.AsObject();
+                            array.Add(ConvertJsonToJson(item!, itemStructure));
+                        }
+                        else
+                        {
+                            // 简单数组
+                            array.Add(ConvertValue(item!.GetValue<string>(), itemType));
+                        }
+                    }
+
+                    result[propertyName] = array;
+                }
+                else
+                {
+                    throw new Exception($"属性 {propertyGroupName} 应该是数组类型");
+                }
+            }
+            else if (propertyInfo.ContainsKey("Properties"))
+            {
+                // 复杂对象
+                var subStructure = propertyInfo["Properties"]!.AsObject();
+                result[propertyName] = ConvertJsonToJson(dataValue!, subStructure);
+            }
+            else
+            {
+                // 简单值
+                var type = propertyInfo["Type"]!.GetValue<string>();
+                result[propertyName] = ConvertValue(dataValue!.GetValue<string>(), type);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 从结构文件获取默认值
+    /// </summary>
+    private static JsonNode GetDefaultValueFromStructure(JsonObject propertyInfo)
+    {
+        if (propertyInfo.ContainsKey("DefaultValue"))
+        {
+            var defaultValue = propertyInfo["DefaultValue"]!.GetValue<string>();
+            if (propertyInfo.ContainsKey("IsArray") && propertyInfo["IsArray"]!.GetValue<bool>())
+            {
+                return new JsonArray(); // 数组默认值为空数组
+            }
+
+            return JsonValue.Create(defaultValue) ?? JsonValue.Create("");
+        }
+
+        if (propertyInfo.ContainsKey("IsArray") && propertyInfo["IsArray"]!.GetValue<bool>())
+        {
+            return new JsonArray();
+        }
+
+        return JsonValue.Create("");
+    }
+
+    /// <summary>
+    /// 转换 XML 数组到 JSON
+    /// </summary>
+    private static JsonNode ConvertXmlArrayToJson(XmlNode xmlElement, JsonObject propertyInfo)
+    {
+        var array = new JsonArray();
+        var itemTypeInfo = propertyInfo["ItemType"]!.AsObject();
+        var itemType = itemTypeInfo["Type"]!.GetValue<string>();
+
+        if (xmlElement.InnerText.Contains(';'))
+        {
+            // 分号分隔的简单数组
+            foreach (var value in xmlElement.InnerText.Split(';'))
+            {
+                array.Add(ConvertValue(value.Trim(), itemType));
             }
         }
         else
         {
-            // 列表
-            var item = current["Item"]!.AsObject();
-            var arrayType = item["Type"]!.GetValue<string>();
-            if (property.InnerText.Contains(';'))
+            // 复杂对象数组
+            foreach (XmlNode child in xmlElement.ChildNodes)
             {
-                foreach (var v in property.InnerText.Split(";"))
+                if (child.NodeType == XmlNodeType.Element)
                 {
-                    ((JsonArray)res).Add(GetVale(arrayType, v));
-                }
-            }
-            else
-            {
-                foreach (XmlNode child in property.ChildNodes)
-                {
-                    var propValue = LoadProperty(child, item);
-                    if (propValue is JsonObject { Count: 0 }) continue;
-                    ((JsonArray)res).Add(propValue);
+                    if (itemTypeInfo.ContainsKey("Properties"))
+                    {
+                        var itemStructure = itemTypeInfo["Properties"]!.AsObject();
+                        array.Add(ConvertXmlToJsonWithValidation(child, itemStructure));
+                    }
+                    else
+                    {
+                        array.Add(ConvertValue(child.InnerText, itemType));
+                    }
                 }
             }
         }
 
-        return res;
+        return array;
+    }
+
+    /// <summary>
+    /// 转换 XML 值到 JSON（使用结构文件信息）
+    /// </summary>
+    private static JsonNode ConvertXmlValueToJson(string value, JsonObject propertyInfo)
+    {
+        var type = propertyInfo["Type"]!.GetValue<string>();
+
+        // 检查是否有正则表达式验证
+        if (propertyInfo.ContainsKey("Regex"))
+        {
+            var regex = propertyInfo["Regex"]!.GetValue<string>();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(value, regex))
+            {
+                throw new Exception($"值 '{value}' 不匹配正则表达式: {regex}");
+            }
+        }
+
+        return ConvertValue(value, type);
+    }
+
+    /// <summary>
+    /// 转换字符串值为指定类型的 JSON 值
+    /// </summary>
+    private static JsonValue ConvertValue(string value, string type)
+    {
+        return type switch
+        {
+            "System.Int32" => JsonValue.Create(int.Parse(value)),
+            "System.UInt32" => JsonValue.Create(uint.Parse(value)),
+            "System.Int16" => JsonValue.Create(short.Parse(value)),
+            "System.UInt16" => JsonValue.Create(ushort.Parse(value)),
+            "System.Int64" => JsonValue.Create(long.Parse(value)),
+            "System.UInt64" => JsonValue.Create(ulong.Parse(value)),
+            "System.Boolean" => JsonValue.Create(bool.Parse(value)),
+            "System.Single" => JsonValue.Create(float.Parse(value)),
+            "System.Double" => JsonValue.Create(double.Parse(value)),
+            "System.Decimal" => JsonValue.Create(decimal.Parse(value)),
+            "System.Char" => JsonValue.Create(char.Parse(value)),
+            "System.SByte" => JsonValue.Create(sbyte.Parse(value)),
+            "System.Byte" => JsonValue.Create(byte.Parse(value)),
+            "System.DateTime" => JsonValue.Create(DateTime.Parse(value)),
+            "System.DateTimeOffset" => JsonValue.Create(DateTimeOffset.Parse(value)),
+            "System.TimeSpan" => JsonValue.Create(TimeSpan.Parse(value)),
+            "System.Guid" => JsonValue.Create(Guid.Parse(value)),
+            "System.Version" => JsonValue.Create(Version.Parse(value)),
+            _ => JsonValue.Create(value)!
+        };
     }
 }

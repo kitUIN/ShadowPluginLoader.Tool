@@ -18,14 +18,8 @@ public static class EntryPointLoad
     /// <summary>
     /// 
     /// </summary>
-    public static void LoadEntryPoints(Assembly asm, string pluginJsonFile, string outPath)
+    public static void LoadEntryPoints(Assembly asm, JsonObject jsonObject, string outPath)
     {
-        if (!File.Exists(pluginJsonFile))
-        {
-            Logger.Log($"{pluginJsonFile} not exists, Skipping...", LoggerLevel.Warning);
-            return;
-        }
-
         var types = asm.GetExportedTypes()
             .Where(x => x.GetCustomAttributes(typeof(EntryPointAttribute), inherit: false).Any());
         var entryPointTypes = types as Type[] ?? types.ToArray();
@@ -34,9 +28,6 @@ public static class EntryPointLoad
             Logger.Log($"No EntryPoint, Skipping...", LoggerLevel.Warning);
             return;
         }
-
-        var jsonString = File.ReadAllText(pluginJsonFile);
-        if (JsonNode.Parse(jsonString) is not JsonObject jsonObject) return;
         var entryPoints = new JsonArray(); 
         foreach (var entryPointType in entryPointTypes)
         {
@@ -51,23 +42,6 @@ public static class EntryPointLoad
         }
 
         jsonObject["EntryPoints"] = entryPoints;
-        var outDir = Path.GetDirectoryName(outPath);
-        if (outDir != null && !Directory.Exists(outDir))
-        {
-            Directory.CreateDirectory(outDir);
-        }
-
-        var options = new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
-        };
-#if NET7_0
-        options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
-#endif
-        File.WriteAllText(outPath,
-            jsonObject.ToJsonString(options)
-        );
-        Logger.Log($"Patch plugin.json -> {outPath}", LoggerLevel.Success);
+        
     }
 }

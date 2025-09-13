@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Xml;
 using ShadowPluginLoader.Attributes;
@@ -13,8 +15,7 @@ internal class Program
 {
     // public static string DirPath = Environment.CurrentDirectory;
     private static readonly string[] ArgNames0 = ["Method", "ExportMetaFile", "OutputPath"];
-    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath", "PluginMeta", "DllName"];
-    private static readonly string[] ArgNames3 = ["Method", "ProjectPath", "PluginFile"];
+    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath", "PluginMeta", "DllFilePath"];
 
     private static readonly string[] ArgNames2 =
     [
@@ -48,7 +49,7 @@ internal class Program
                             x => x.GetCustomAttributes()
                                 .Any(y => y is ExportMetaAttribute));
                     if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
-                    var content = ExportMetaMethod.ExportMeta(type);
+                    var content = ExportMetaMethod.ExportMetaToJson(type);
                     var path = Path.Combine(outputPath, "plugin.d.json");
                     File.WriteAllText(path, content);
                     Logger.Log($"plugin.d.json -> {path}", LoggerLevel.Success);
@@ -58,29 +59,37 @@ internal class Program
                 {
                     ShowArgs(args, ArgNames1);
                     var projectPath = args[1]; // projectPath
-                    var csproj = args[2]; // csprojPath
+                    var csprojPath = args[2]; // csprojPath
                     var pluginMeta = args[3]; // PluginMeta
                     if (string.IsNullOrEmpty(pluginMeta))
                     {
                         throw new Exception("Missing <PluginMeta> in <PropertyGroup>(.csproj)");
                     }
-
-                    var dllName = args[4]; // DllName
+                    var dllFilePath = args[4]; // DllFilePath
                     var defineJson = ReadMetaMethod.GetDefineJson(projectPath);
                     var xmlDoc = new XmlDocument();
-                    xmlDoc.Load(Path.Combine(projectPath, csproj));
+                    xmlDoc.Load(csprojPath);
                     var pluginMetaRoot = new XmlDocument();
                     pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
                     var root = xmlDoc.DocumentElement;
                     var pluginMetaDoc = pluginMetaRoot.DocumentElement;
                     if (root is null) break;
                     if (pluginMetaDoc is null) break;
-                    var content =
-                        ReadMetaMethod.CheckJsonRequired((JsonObject)defineJson, root, pluginMetaDoc, dllName);
-                    var path = Path.Combine(projectPath, "plugin.json");
-                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                    File.WriteAllText(path, content);
-                    Logger.Log($"plugin.json -> {path}", LoggerLevel.Success);
+                    var content = ReadMetaMethod.CheckJsonRequired(defineJson, root, pluginMetaDoc, dllFilePath);
+                    var dllDir = Path.GetDirectoryName(dllFilePath)!;
+                    var outPath = Path.Combine(dllDir, "Assets", "plugin.json");
+                    EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(dllFilePath), content, outPath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
+                    var options = new JsonSerializerOptions
+                    {
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        WriteIndented = true
+                    };
+            #if NET7_0
+                    options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
+            #endif
+                    File.WriteAllText(outPath, content.ToJsonString(options));
+                    Logger.Log($"Export plugin.json -> {outPath}", LoggerLevel.Success);
                     break;
                 }
                 case "2":
@@ -97,18 +106,6 @@ internal class Program
                     PackageMethod.Exclude(outputPath, excludesFile,
                         zipPath, zipName, zipExt, configuration,
                         defaultExclude, needMsix);
-                    break;
-                }
-                case "3":
-                {
-                    ShowArgs(args, ArgNames3);
-                    var projectPath = args[1]; // projectPath
-                    var pluginFile = args[2]; // pluginFile
-                    var pluginsJsonFile = Path.Combine(projectPath, "plugin.json");
-
-                    var outPath = Path.Combine(Path.GetDirectoryName(pluginFile)!,
-                        Path.GetFileNameWithoutExtension(pluginFile), "Assets", "plugin.json");
-                    EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(pluginFile), pluginsJsonFile, outPath);
                     break;
                 }
             }

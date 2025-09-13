@@ -1,4 +1,4 @@
-﻿namespace ShadowPluginLoader.Attributes;
+namespace ShadowPluginLoader.Attributes;
 /// <summary>
 /// Plugin Main Class
 /// </summary>
@@ -9,7 +9,7 @@ public class MainPluginAttribute : EntryPointAttribute
     /// Name
     /// </summary>
     public override string Name => "MainPlugin";
-    
+
     /// <summary>
     /// Is BuiltIn Plugin
     /// </summary>

@@ -1,3 +1,6 @@
+using NJsonSchema;
+using NJsonSchema.Generation;
+using ShadowPluginLoader.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,9 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Xml;
-using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
 
@@ -49,9 +50,12 @@ internal class Program
                             x => x.GetCustomAttributes()
                                 .Any(y => y is ExportMetaAttribute));
                     if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
-                    var content = ExportMetaMethod.ExportMetaToJson(type);
+                    var settings = new SystemTextJsonSchemaGeneratorSettings();
+                    settings.SchemaProcessors.Add(new FieldAttributeSchemaProcessor());
+                    var schema = JsonSchema.FromType(type, settings);
+                    JsonSchemaDefinitionCleaner.RemoveUnusedDefinitions(schema);
                     var path = Path.Combine(outputPath, "plugin.d.json");
-                    File.WriteAllText(path, content);
+                    File.WriteAllText(path, schema.ToJson());
                     Logger.Log($"plugin.d.json -> {path}", LoggerLevel.Success);
                     break;
                 }

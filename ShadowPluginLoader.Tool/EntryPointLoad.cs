@@ -13,7 +13,7 @@ namespace ShadowPluginLoader.Tool;
 /// <summary>
 /// 
 /// </summary>
-public static class EntryPointLoad
+internal static class EntryPointLoad
 {
     /// <summary>
     /// 

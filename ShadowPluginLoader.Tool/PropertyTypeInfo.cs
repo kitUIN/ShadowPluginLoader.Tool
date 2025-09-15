@@ -16,7 +16,7 @@ namespace ShadowPluginLoader.Tool;
 /// <param name="IsGeneric">是否泛型</param>
 /// <param name="ItemType">如果是集合</param>
 /// <param name="GenericArguments">泛型参数的类型信息（递归结构）</param>
-public record PropertyTypeInfo(
+internal record PropertyTypeInfo(
     string TypeName,
     Type RawType,
     bool IsNullable,

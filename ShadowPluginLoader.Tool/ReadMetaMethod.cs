@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace ShadowPluginLoader.Tool;
 
-public static class ReadMetaMethod
+internal static class ReadMetaMethod
 {
     public static readonly string[] SupportType =
     [

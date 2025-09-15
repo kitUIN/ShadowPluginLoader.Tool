@@ -10,7 +10,7 @@ using ShadowPluginLoader.Attributes;
 
 namespace ShadowPluginLoader.Tool;
 
-public static class ExportMetaMethod
+internal static class ExportMetaMethod
 {
     /// <summary>
     /// 导出 JSON 结构文件，每个成员对应一个 JSON 对象

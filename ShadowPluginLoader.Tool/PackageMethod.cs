@@ -6,7 +6,7 @@ namespace ShadowPluginLoader.Tool;
 
 using System.IO.Compression;
 
-public static class PackageMethod
+internal static class PackageMethod
 {
     private static readonly List<string> DefaultExclude =
     [

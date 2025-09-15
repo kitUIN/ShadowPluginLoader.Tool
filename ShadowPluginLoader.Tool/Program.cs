@@ -16,7 +16,7 @@ internal class Program
 {
     // public static string DirPath = Environment.CurrentDirectory;
     private static readonly string[] ArgNames0 = ["Method", "ExportMetaFile", "OutputPath"];
-    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath", "PluginMeta", "DllFilePath"];
+    private static readonly string[] ArgNames1 = ["Method", "ProjectPath", "CsprojPath", "DllFilePath"];
 
     private static readonly string[] ArgNames2 =
     [
@@ -64,22 +64,12 @@ internal class Program
                     ShowArgs(args, ArgNames1);
                     var projectPath = args[1]; // projectPath
                     var csprojPath = args[2]; // csprojPath
-                    var pluginMeta = args[3]; // PluginMeta
-                    if (string.IsNullOrEmpty(pluginMeta))
-                    {
-                        throw new Exception("Missing <PluginMeta> in <PropertyGroup>(.csproj)");
-                    }
-                    var dllFilePath = args[4]; // DllFilePath
-                    var defineJson = ReadMetaMethod.GetDefineJson(projectPath);
+                    var dllFilePath = args[3]; // DllFilePath
                     var xmlDoc = new XmlDocument();
                     xmlDoc.Load(csprojPath);
-                    var pluginMetaRoot = new XmlDocument();
-                    pluginMetaRoot.LoadXml("<PluginMeta>" + pluginMeta + "</PluginMeta>");
                     var root = xmlDoc.DocumentElement;
-                    var pluginMetaDoc = pluginMetaRoot.DocumentElement;
                     if (root is null) break;
-                    if (pluginMetaDoc is null) break;
-                    var content = ReadMetaMethod.CheckJsonRequired(defineJson, root, pluginMetaDoc, dllFilePath);
+                    var content = ReadMetaMethod.CheckJsonRequired(projectPath, root, dllFilePath);
                     var dllDir = Path.GetDirectoryName(dllFilePath)!;
                     var outPath = Path.Combine(dllDir, "Assets", "plugin.json");
                     EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(dllFilePath), content, outPath);

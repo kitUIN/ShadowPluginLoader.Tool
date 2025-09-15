@@ -23,17 +23,11 @@
     </ItemGroup>
     <!-- Project Referer -->
     <ItemGroup>
-        <None Include="$(OutputPath)\$(PackageId)\Assets\plugin.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <TargetPath>$(PackageId)\Assets\plugin.json</TargetPath>
-        </None>
-    </ItemGroup>
-    <ItemGroup>
-        <AdditionalFiles Include="$(ProjectDir)plugin.json"/>
+        <None Include="$(ProjectDir)plugin.json"/>
     </ItemGroup>
     <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
     <Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
-        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) &quot;$(PluginMeta)&quot; $(OutputFile)"
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
               ConsoleToMSBuild="True"/>
     </Target>
 

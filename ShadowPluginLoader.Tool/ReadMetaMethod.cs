@@ -80,13 +80,6 @@ internal static class ReadMetaMethod
         {
             XmlNodeToDict(child, dict);
         }
-
-        foreach (var kv in dict)
-
-        {
-            Console.WriteLine(kv.Key + kv.Value);
-        }
-
         return dict;
     }
 
@@ -160,10 +153,10 @@ internal static class ReadMetaMethod
         var res = (JsonObject)JsonNode.Parse(result)!;
         res["DllName"] = dllName;
         if (!res.ContainsKey("Dependencies")) res["Dependencies"] = new JsonArray();
-
+        var depArray = (JsonArray) res["Dependencies"]!;
         foreach (var dep in LoadDependencies(xmlDoc))
         {
-            ((JsonArray)res["Dependencies"]!).Add(dep!.GetValue<string>());
+            depArray.Add(dep!.DeepClone());
         }
 
         return res;

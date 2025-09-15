@@ -50,7 +50,11 @@ internal class Program
                             x => x.GetCustomAttributes()
                                 .Any(y => y is ExportMetaAttribute));
                     if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
-                    var settings = new SystemTextJsonSchemaGeneratorSettings();
+                    var settings = new SystemTextJsonSchemaGeneratorSettings
+                    {
+                        FlattenInheritanceHierarchy = true,
+                        // AllowReferencesWithProperties = true,
+                    };
                     settings.SchemaProcessors.Add(new FieldAttributeSchemaProcessor());
                     var schema = JsonSchema.FromType(type, settings);
                     JsonSchemaDefinitionCleaner.RemoveUnusedDefinitions(schema);
@@ -79,9 +83,9 @@ internal class Program
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                         WriteIndented = true
                     };
-            #if NET7_0
+#if NET7_0
                     options.TypeInfoResolver = JsonSerializerOptions.Default.TypeInfoResolver;
-            #endif
+#endif
                     File.WriteAllText(outPath, content.ToJsonString(options));
                     Logger.Log($"Export plugin.json -> {outPath}", LoggerLevel.Success);
                     break;

@@ -63,7 +63,7 @@ internal static class ReadMetaMethod
                 continue;
             arrays.Add(new JsonObject
             {
-                ["Name"] = name,
+                ["Id"] = name,
                 ["Need"] = label
             });
         }

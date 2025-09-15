@@ -57,13 +57,15 @@ internal static class ReadMetaMethod
         foreach (XmlNode dependency in dependencies)
         {
             var name = dependency.Attributes!["Include"]?.Value;
+            var id = dependency.Attributes!["Id"]?.Value;
             var label = dependency.Attributes?["Need"]?.Value;
 
             if (string.IsNullOrWhiteSpace(name))
                 continue;
             arrays.Add(new JsonObject
             {
-                ["Id"] = name,
+                ["Name"] = name,
+                ["Id"] = id ?? name,
                 ["Need"] = label
             });
         }
@@ -80,6 +82,7 @@ internal static class ReadMetaMethod
         {
             XmlNodeToDict(child, dict);
         }
+
         return dict;
     }
 
@@ -153,7 +156,7 @@ internal static class ReadMetaMethod
         var res = (JsonObject)JsonNode.Parse(result)!;
         res["DllName"] = dllName;
         if (!res.ContainsKey("Dependencies")) res["Dependencies"] = new JsonArray();
-        var depArray = (JsonArray) res["Dependencies"]!;
+        var depArray = (JsonArray)res["Dependencies"]!;
         foreach (var dep in LoadDependencies(xmlDoc))
         {
             depArray.Add(dep!.DeepClone());
@@ -161,6 +164,4 @@ internal static class ReadMetaMethod
 
         return res;
     }
-
-
 }

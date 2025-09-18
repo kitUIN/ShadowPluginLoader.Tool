@@ -7,7 +7,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
     
-    <Version>3.0.3</Version>
+    <Version>3.0.3.1</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -35,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Scriban" Version="6.3.0" />
-    <PackageReference Include="ShadowPluginLoader.Attributes" Version="3.0.2" />
+    <PackageReference Include="ShadowPluginLoader.Attributes" Version="3.0.2.2" />
     <PackageReference Include="NJsonSchema" Version="11.4.0" />
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@
         <LangVersion>12</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Nuget -->
-        <Version>3.0.2</Version>
+        <Version>3.0.2.2</Version>
         <PackageId>ShadowPluginLoader.Attributes</PackageId>
         <Authors>kitUIN</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

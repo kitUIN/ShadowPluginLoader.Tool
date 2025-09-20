@@ -56,16 +56,14 @@ internal static class ReadMetaMethod
 
         foreach (XmlNode dependency in dependencies)
         {
-            var name = dependency.Attributes!["Include"]?.Value;
-            var id = dependency.Attributes!["Id"]?.Value;
+            var id = dependency.Attributes!["Include"]?.Value;
             var label = dependency.Attributes?["Need"]?.Value;
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(id))
                 continue;
             arrays.Add(new JsonObject
             {
-                ["Name"] = name,
-                ["Id"] = id ?? name,
+                ["Id"] = id,
                 ["Need"] = label
             });
         }
@@ -98,7 +96,7 @@ internal static class ReadMetaMethod
                 if (sameNameNodes.Count > 1)
                 {
                     var list = (from XmlNode n in sameNameNodes
-                        select XmlNodeToDict(n, new Dictionary<string, object>())).Cast<object>().ToList();
+                                select XmlNodeToDict(n, new Dictionary<string, object>())).Cast<object>().ToList();
                     dict[child.Name] = list;
                 }
                 else if (child.ChildNodes.Count == 1 && child.FirstChild is { NodeType: XmlNodeType.Text })

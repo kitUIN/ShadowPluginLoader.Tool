@@ -15,15 +15,14 @@ public class ConfigFieldAttribute : Attribute
     /// Field description
     /// </summary>
     public string? Description { get; init; }
-
+    
     /// <summary>
-    /// Whether this field is required
+    /// Field alias for serialization
     /// </summary>
-    public bool Required { get; init; } = true;
-
+    public string? Alias { get; init; }
+    
     /// <summary>
-    /// Default value
+    /// Apply naming conventions
     /// </summary>
-    public object? DefaultValue { get; init; }
-
+    public bool ApplyNamingConventions { get; init; } = false;
 }

@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
-    
-    <Version>3.0.3.1</Version>
+
+    <Version>3.0.4</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -22,12 +22,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RollForward>LatestMajor</RollForward>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="..\README.md" Pack="True" PackagePath="\" />
     <None Include="Assets\build\**" Pack="True" PackagePath="build\" />
     <None Include="Assets\buildTransitive\**" Pack="True" PackagePath="buildTransitive\" />
-    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.*" Exclude="bin\$(Configuration)\**\ShadowPluginLoader.Tool.exe" Pack="True" PackagePath="build\" />
+    <None Include="bin\$(Configuration)\**\ShadowPluginLoader.*"
+      Exclude="bin\$(Configuration)\**\ShadowPluginLoader.Tool.exe" Pack="True" PackagePath="build\" />
     <None Include="bin\$(Configuration)\**\NJsonSchema.*" Pack="True" PackagePath="build\" />
     <None Include="bin\$(Configuration)\**\Scriban.*" Pack="True" PackagePath="build\" />
     <None Include="bin\$(Configuration)\**\Namotion.Reflection.dll" Pack="True" PackagePath="build\" />
@@ -35,7 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Scriban" Version="6.3.0" />
-    <PackageReference Include="ShadowPluginLoader.Attributes" Version="3.0.2.2" />
+    <PackageReference Include="ShadowPluginLoader.Attributes" Version="3.0.4" />
     <PackageReference Include="NJsonSchema" Version="11.4.0" />
   </ItemGroup>
   <ItemGroup>

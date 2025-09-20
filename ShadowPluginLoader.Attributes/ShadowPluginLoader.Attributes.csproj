@@ -7,13 +7,15 @@
         <LangVersion>12</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Nuget -->
-        <Version>3.0.2.2</Version>
+        <Version>3.0.4</Version>
         <PackageId>ShadowPluginLoader.Attributes</PackageId>
         <Authors>kitUIN</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</RepositoryUrl>
+        <PackageProjectUrl>
+            https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</PackageProjectUrl>
+        <RepositoryUrl>
+            https://github.com/kitUIN/ShadowPluginLoader.Tool/tree/master/ShadowPluginLoader.MetaAttributes</RepositoryUrl>
         <Description>✨ ShadowPluginLoader Attributes✨</Description>
         <Copyright>Copyright 2024-2025</Copyright>
         <PackageTags>kitUIN;plugin-loader;plugin;extension;attribute</PackageTags>

@@ -25,7 +25,7 @@ public class EntryPointMetaAttribute : MetaAttribute
     /// <summary>
     /// Json Type As String
     /// </summary>
-    public bool AsString => true;
+    public new bool AsString => true;
 
     /// <summary>
     /// 

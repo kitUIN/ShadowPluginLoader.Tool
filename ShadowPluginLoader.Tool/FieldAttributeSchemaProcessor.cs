@@ -2,14 +2,14 @@
 using NJsonSchema;
 using NJsonSchema.Generation;
 using ShadowPluginLoader.Attributes;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ShadowPluginLoader.Tool;
 
 internal class FieldAttributeSchemaProcessor : ISchemaProcessor
 {
+    public static string? SdkVersion;
+
     public void Process(SchemaProcessorContext context)
     {
         foreach (var propInfo in context.ContextualType.Properties)
@@ -49,16 +49,21 @@ internal class FieldAttributeSchemaProcessor : ISchemaProcessor
                 propSchema.Reference = null;
                 propSchema.Properties.Clear();
             }
+
+            // 如果字段是 SdkVersion 且没有默认值，则设置为 DLL 的版本号
+            if (jsonName == "SdkVersion" && propSchema.Default == null)
+            {
+                var declaringAssembly = propInfo.PropertyInfo.DeclaringType?.Assembly;
+                var version = SdkVersion;
+                if (version != null)
+                {
+                    propSchema.Default = version;
+                }
+            }
+
         }
 
     }
-    private static JsonSchema GetRootSchema(JsonSchema schema)
-    {
-        var current = schema;
-        while (current.ParentSchema != null)
-            current = current.ParentSchema;
-        return current;
-    }
+     
 
-    
 }

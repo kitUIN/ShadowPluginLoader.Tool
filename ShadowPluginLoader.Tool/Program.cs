@@ -45,10 +45,11 @@ internal class Program
                     ShowArgs(args, ArgNames0);
                     var exportMetaFile = args[1]; // ExportMetaFile
                     var outputPath = args[2]; // OutputPath
-                    var type = Assembly.LoadFrom(exportMetaFile).GetExportedTypes()
-                        .FirstOrDefault(
-                            x => x.GetCustomAttributes()
-                                .Any(y => y is ExportMetaAttribute));
+                    var assembly = Assembly.LoadFrom(exportMetaFile);
+                    FieldAttributeSchemaProcessor.SdkVersion = assembly?.GetName().Version?.ToString();
+                    var type = assembly?.GetExportedTypes()
+                        .FirstOrDefault(x => x.GetCustomAttributes()
+                            .Any(y => y is ExportMetaAttribute));
                     if (type is null) throw new Exception("Not Found ExportMetaAttribute In Any Class");
                     var settings = new SystemTextJsonSchemaGeneratorSettings
                     {

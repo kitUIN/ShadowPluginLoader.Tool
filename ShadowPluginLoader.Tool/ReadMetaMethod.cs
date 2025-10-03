@@ -1,16 +1,13 @@
+using Newtonsoft.Json.Linq;
+using NJsonSchema;
+using Scriban;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using NJsonSchema;
-using Scriban;
 
 namespace ShadowPluginLoader.Tool;
 
@@ -71,7 +68,7 @@ internal static class ReadMetaMethod
         return arrays;
     }
 
-    static Dictionary<string, object> LoadTemplateDict(XmlNode root)
+    private static Dictionary<string, object> LoadTemplateDict(XmlNode root)
     {
         var dict = new Dictionary<string, object>();
         var propertyGroupList = root.SelectNodes("PropertyGroup");
@@ -84,7 +81,7 @@ internal static class ReadMetaMethod
         return dict;
     }
 
-    static Dictionary<string, object> XmlNodeToDict(XmlNode node, Dictionary<string, object> dict)
+    private static Dictionary<string, object> XmlNodeToDict(XmlNode node, Dictionary<string, object> dict)
     {
         foreach (XmlNode child in node.ChildNodes)
         {
@@ -96,7 +93,7 @@ internal static class ReadMetaMethod
                 if (sameNameNodes.Count > 1)
                 {
                     var list = (from XmlNode n in sameNameNodes
-                                select XmlNodeToDict(n, new Dictionary<string, object>())).Cast<object>().ToList();
+                        select XmlNodeToDict(n, new Dictionary<string, object>())).Cast<object>().ToList();
                     dict[child.Name] = list;
                 }
                 else if (child.ChildNodes.Count == 1 && child.FirstChild is { NodeType: XmlNodeType.Text })
@@ -119,18 +116,19 @@ internal static class ReadMetaMethod
         return dict;
     }
 
-    static void ValidateJson(string projectPath, string json)
+    private static string ValidateJson(string projectPath, string json)
     {
         var schema = GetDefineJson(projectPath).GetAwaiter().GetResult();
         var errors = schema.Validate(json);
 
         if (errors.Count == 0)
         {
-            Console.WriteLine("JSON 校验通过 ✅");
+            Console.WriteLine("JSON 校验通过");
+            return ApplyDefaults(JObject.Parse(json), schema);
         }
         else
         {
-            Console.WriteLine("JSON 校验失败 ❌");
+            Console.WriteLine("JSON 校验失败");
 
             foreach (var error in errors)
             {
@@ -140,7 +138,22 @@ internal static class ReadMetaMethod
                 Console.WriteLine($"消息: {error}");
                 Console.WriteLine("----------------------");
             }
+
+            throw new Exception("JSON 校验失败");
         }
+    }
+
+    private static string ApplyDefaults(JObject json, JsonSchema schema)
+    {
+        foreach (var (key, propSchema) in schema.Properties)
+        {
+            if (!json.ContainsKey(key) && propSchema.Default != null)
+            {
+                json[key] = JToken.FromObject(propSchema.Default);
+            }
+        }
+
+        return json.ToString();
     }
 
     public static JsonObject CheckJsonRequired(string projectPath, XmlNode xmlDoc, string dllFilePath)
@@ -150,8 +163,7 @@ internal static class ReadMetaMethod
         var dict = LoadTemplateDict(xmlDoc);
         var template = Template.Parse(pluginJsonValue);
         var result = template.Render(dict);
-        ValidateJson(projectPath, result);
-        var res = (JsonObject)JsonNode.Parse(result)!;
+        var res = (JsonObject)JsonNode.Parse(ValidateJson(projectPath, result))!;
         res["DllName"] = dllName;
         if (!res.ContainsKey("Dependencies")) res["Dependencies"] = new JsonArray();
         var depArray = (JsonArray)res["Dependencies"]!;

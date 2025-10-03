@@ -8,7 +8,7 @@
         <!-- Package Name -->
         <PluginPackageName>$(TargetName)-$(Version)</PluginPackageName>
         <!-- Package Ext -->
-        <PluginPackageExt>.zip</PluginPackageExt>
+        <PluginPackageExt>.sdow</PluginPackageExt>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 </Project>

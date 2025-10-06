@@ -24,9 +24,6 @@
     <!-- Project Referer -->
     <ItemGroup>
         <None Include="$(ProjectDir)plugin.json"/>
-        <None Update="$(MSBuildProjectName)\plugin.json">
-	        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
 	</ItemGroup>
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
@@ -39,8 +36,16 @@
 	             Importance="high"/>
     </Target>
 
+
+    <ItemGroup>
+	    <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json">
+		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		    <Link>$(MSBuildProjectName)\plugin.json</Link>
+	    </None>
+    </ItemGroup>
+
 	<!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
-	<Target Name="ReadMetaData" AfterTargets="PackagePlugin">
+	<Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
 		<Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
               ConsoleToMSBuild="True"/>
 	</Target> 

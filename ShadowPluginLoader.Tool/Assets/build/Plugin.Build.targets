@@ -24,8 +24,10 @@
     <!-- Project Referer -->
     <ItemGroup>
         <None Include="$(ProjectDir)plugin.json"/>
-    </ItemGroup>
-
+        <None Update="$(MSBuildProjectName)\plugin.json">
+	        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+	</ItemGroup>
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
             Condition="Exists('$(PluginDFile)') ">
@@ -38,17 +40,10 @@
     </Target>
 
 	<!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
-	<Target Name="ReadMetaData" BeforeTargets="CopyPluginJsonManually">
+	<Target Name="ReadMetaData" AfterTargets="PackagePlugin">
 		<Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
               ConsoleToMSBuild="True"/>
-	</Target>
-
-    <Target Name="CopyPluginJsonManually" BeforeTargets="PackagePlugin">
-	    <Copy
-		    SourceFiles="$(ProjectDir)GeneratedAssets\plugin.json"
-		    DestinationFiles="$(OutputPath)\$(MSBuildProjectName)\plugin.json"
-		    SkipUnchangedFiles="true" />
-    </Target>
+	</Target> 
 	<!-- Package Plugin To PluginPackage Dir -->
     <Target Name="PackagePlugin" BeforeTargets="Build"
             Condition="$(AutoPluginPackage)">

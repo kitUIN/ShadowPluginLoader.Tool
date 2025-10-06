@@ -7,7 +7,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
 
-    <Version>3.0.6</Version>
+    <Version>3.0.9</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -15,7 +15,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kitUIN/ShadowPluginLoader.Tool/</RepositoryUrl>
-    <Description>✨ ShadowPluginLoader Build Tool✨</Description>
+    <Description>✨ ShadowPluginLoader Build Tool ✨</Description>
     <Copyright>Copyright 2024-2025</Copyright>
     <PackageTags>kitUIN;plugin-loader;plugin;extension;msbuild</PackageTags>
     <PackageOutputPath>..\..\NugetPackages</PackageOutputPath>

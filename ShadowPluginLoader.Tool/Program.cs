@@ -21,7 +21,7 @@ internal class Program
     private static readonly string[] ArgNames2 =
     [
         "Method", "OutputPath", "ExcludesFile",
-        "zipPath", "zipName", "zipExt", "Configuration", "defaultExclude", "needMsix"
+        "zipPath", "zipName", "zipExt", "Configuration", "defaultExclude"
     ];
 
     private static void ShowArgs(IReadOnlyList<string> args, IReadOnlyList<string> name)
@@ -75,8 +75,7 @@ internal class Program
                     var root = xmlDoc.DocumentElement;
                     if (root is null) break;
                     var content = ReadMetaMethod.CheckJsonRequired(projectPath, root, dllFilePath);
-                    var dllDir = Path.GetDirectoryName(dllFilePath)!;
-                    var outPath = Path.Combine(dllDir, "Assets", "plugin.json");
+                    var outPath = Path.Combine(Path.GetDirectoryName(csprojPath)!, "GeneratedAssets", "plugin.json");
                     EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(dllFilePath), content, outPath);
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
                     var options = new JsonSerializerOptions
@@ -100,11 +99,8 @@ internal class Program
                     var zipName = args[4]; // zipName
                     var zipExt = args[5]; // zipExt
                     var configuration = args[6]; // Configuration
-                    var defaultExclude = Convert.ToBoolean(args[7]);
-                    var needMsix = Convert.ToBoolean(args[8]);
                     PackageMethod.Exclude(outputPath, excludesFile,
-                        zipPath, zipName, zipExt, configuration,
-                        defaultExclude, needMsix);
+                        zipPath, zipName, zipExt, configuration);
                     break;
                 }
             }

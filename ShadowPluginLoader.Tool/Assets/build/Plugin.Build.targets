@@ -25,26 +25,34 @@
     <ItemGroup>
         <None Include="$(ProjectDir)plugin.json"/>
     </ItemGroup>
-    <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
-    <Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
-        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
-              ConsoleToMSBuild="True"/>
-    </Target>
 
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
             Condition="Exists('$(PluginDFile)') ">
-        <!-- PluginDFile is from `Loaders.Build.props` -->
-        <Copy SourceFiles="$(PluginDFile)"
-              DestinationFiles="$(ProjectDir)plugin.d.json"
-              OverwriteReadOnlyFiles="true"/>
-        <Message Text="Copy $(PluginDFile) -> $(ProjectDir)plugin.d.json" 
-                 Importance="high"/>
+	    <!-- PluginDFile is from `Loaders.Build.props` -->
+	    <Copy SourceFiles="$(PluginDFile)"
+	          DestinationFiles="$(ProjectDir)plugin.d.json"
+	          OverwriteReadOnlyFiles="true"/>
+	    <Message Text="Copy $(PluginDFile) -> $(ProjectDir)plugin.d.json"
+	             Importance="high"/>
     </Target>
-    <!-- Package Plugin To PluginPackage Dir -->
+
+	<!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
+	<Target Name="ReadMetaData" BeforeTargets="CopyPluginJsonManually">
+		<Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
+              ConsoleToMSBuild="True"/>
+	</Target>
+
+    <Target Name="CopyPluginJsonManually" BeforeTargets="PackagePlugin">
+	    <Copy
+		    SourceFiles="$(ProjectDir)GeneratedAssets\plugin.json"
+		    DestinationFiles="$(OutputPath)\$(MSBuildProjectName)\plugin.json"
+		    SkipUnchangedFiles="true" />
+    </Target>
+	<!-- Package Plugin To PluginPackage Dir -->
     <Target Name="PackagePlugin" BeforeTargets="Build"
             Condition="$(AutoPluginPackage)">
-        <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration) $(DefaultExclude) $(PluginMisxPackage)"
+        <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration)"
               ConsoleToMSBuild="True"/>
         <Exec Condition="$(AppCertPath) != '' and $(PluginMisxPackage)"
               Command="powershell -file $(MSBuildThisFileDirectory)PackageMsix.ps1 $(PluginPackagePath) $(PluginPackageName).msix $(OutputDir) $(AppCertPath) $(AppCertPassword)"

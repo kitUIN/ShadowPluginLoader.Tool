@@ -22,9 +22,8 @@
         <None Include="$(OutputPath)\$(PackageId)\Assets\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)/Assets" />
     </ItemGroup>
     <!-- Project Referer -->
-    <ItemGroup>
-        <None Include="$(ProjectDir)plugin.json"/>
-	</ItemGroup>
+
+    
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
             Condition="Exists('$(PluginDFile)') ">
@@ -38,7 +37,8 @@
 
 
     <ItemGroup>
-	    <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json">
+        <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json" Pack="true" PackagePath="contentTransitive\$(MSBuildProjectName)\" />
+        <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json">
 		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		    <Link>$(MSBuildProjectName)\plugin.json</Link>
 	    </None>

@@ -95,12 +95,12 @@ internal class Program
                 {
                     ShowArgs(args, ArgNames2);
                     var outputPath = args[1]; // OutputPath
-                    var excludesFile = args[2]; // ExcludesFile
+                    var excludesFiles = args[2]; // ExcludesFile
                     var zipPath = args[3]; // zipPath
                     var zipName = args[4]; // zipName
                     var zipExt = args[5]; // zipExt
                     var configuration = args[6]; // Configuration
-                    PackageMethod.Exclude(outputPath, excludesFile,
+                    PackageMethod.ExcludeAndZip(outputPath, excludesFiles,
                         zipPath, zipName, zipExt, configuration);
                     break;
                 }

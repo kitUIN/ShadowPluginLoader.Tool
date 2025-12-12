@@ -119,12 +119,13 @@ internal static class ReadMetaMethod
     private static string ValidateJson(string projectPath, string json)
     {
         var schema = GetDefineJson(projectPath).GetAwaiter().GetResult();
+        schema.AllowAdditionalProperties = true;
         var errors = schema.Validate(json);
 
         if (errors.Count == 0)
         {
             Console.WriteLine("JSON 校验通过");
-            return ApplyDefaults(JObject.Parse(json), schema);
+            return json;
         }
         else
         {

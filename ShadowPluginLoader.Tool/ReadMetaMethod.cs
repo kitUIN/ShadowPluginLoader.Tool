@@ -125,23 +125,21 @@ internal static class ReadMetaMethod
         if (errors.Count == 0)
         {
             Console.WriteLine("JSON 校验通过");
-            return json;
+            return ApplyDefaults(JObject.Parse(json), schema);
         }
-        else
+
+        Console.WriteLine("JSON 校验失败");
+
+        foreach (var error in errors)
         {
-            Console.WriteLine("JSON 校验失败");
-
-            foreach (var error in errors)
-            {
-                Console.WriteLine($"路径: {error.Path}");
-                Console.WriteLine($"类型: {error.Kind}");
-                Console.WriteLine($"属性: {error.Property}");
-                Console.WriteLine($"消息: {error}");
-                Console.WriteLine("----------------------");
-            }
-
-            throw new Exception("JSON 校验失败");
+            Console.WriteLine($"路径: {error.Path}");
+            Console.WriteLine($"类型: {error.Kind}");
+            Console.WriteLine($"属性: {error.Property}");
+            Console.WriteLine($"消息: {error}");
+            Console.WriteLine("----------------------");
         }
+
+        throw new Exception("JSON 校验失败");
     }
 
     private static string ApplyDefaults(JObject json, JsonSchema schema)

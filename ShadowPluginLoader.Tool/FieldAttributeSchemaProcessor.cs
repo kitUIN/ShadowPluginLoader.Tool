@@ -1,4 +1,4 @@
-
+using System;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using ShadowPluginLoader.Attributes;
@@ -8,7 +8,17 @@ namespace ShadowPluginLoader.Tool;
 
 internal class FieldAttributeSchemaProcessor : ISchemaProcessor
 {
-    public static string? SdkVersion;
+    private static string? _sdkVersion;
+
+    public static void SetSdkVersion(Version? version)
+    {
+        if (version == null) throw new ArgumentNullException(nameof(version));
+        var major = version.Major;
+        var minor = version.Minor;
+        var min = $"{major}.{minor}";
+        var max = $"{major}.{minor + 1}";
+        _sdkVersion = $"[{min}, {max})";
+    }
 
     public void Process(SchemaProcessorContext context)
     {
@@ -51,19 +61,10 @@ internal class FieldAttributeSchemaProcessor : ISchemaProcessor
             }
 
             // 如果字段是 SdkVersion 且没有默认值，则设置为 DLL 的版本号
-            if (jsonName == "SdkVersion" && propSchema.Default == null)
+            if (jsonName == "SdkVersion" && propSchema.Default == null && _sdkVersion != null)
             {
-                var declaringAssembly = propInfo.PropertyInfo.DeclaringType?.Assembly;
-                var version = SdkVersion;
-                if (version != null)
-                {
-                    propSchema.Default = version;
-                }
+                propSchema.Default = _sdkVersion;
             }
-
         }
-
     }
-     
-
 }

@@ -33,6 +33,7 @@ internal class Program
         }
     }
 
+
     public static int Main(string[] args)
     {
         try
@@ -46,7 +47,7 @@ internal class Program
                     var exportMetaFile = args[1]; // ExportMetaFile
                     var outputPath = args[2]; // OutputPath
                     var assembly = Assembly.LoadFrom(exportMetaFile);
-                    FieldAttributeSchemaProcessor.SdkVersion = assembly?.GetName().Version?.ToString();
+                    FieldAttributeSchemaProcessor.SetSdkVersion(assembly.GetName().Version);
                     var type = assembly?.GetExportedTypes()
                         .FirstOrDefault(x => x.GetCustomAttributes()
                             .Any(y => y is ExportMetaAttribute));

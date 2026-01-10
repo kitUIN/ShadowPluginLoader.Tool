@@ -7,7 +7,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>NU5128;NU5129</NoWarn>
 
-    <Version>3.0.16</Version>
+    <Version>3.1.0</Version>
     <LangVersion>12</LangVersion>
     <PackageId>ShadowPluginLoader.Tool</PackageId>
     <Owner>kitUIN</Owner>
@@ -34,9 +34,9 @@
     <None Include="bin\$(Configuration)\**\Newtonsoft.Json.dll" Pack="True" PackagePath="build\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Scriban" Version="6.3.0" />
+    <PackageReference Include="Scriban" Version="6.5.2" />
     <PackageReference Include="ShadowPluginLoader.Attributes" Version="3.0.5" />
-    <PackageReference Include="NJsonSchema" Version="11.4.0" />
+    <PackageReference Include="NJsonSchema" Version="11.5.2" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\build\**" />

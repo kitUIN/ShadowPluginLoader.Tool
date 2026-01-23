@@ -12,5 +12,7 @@
         <PluginMisxPackage>false</PluginMisxPackage>
         <!-- Auto Generate I18N -->
         <AutoGenerateI18N>true</AutoGenerateI18N>
+        <!-- Debug SourceGenerator-->
+        <DebugSourceGenerator>false</DebugSourceGenerator>
     </PropertyGroup>
 </Project>

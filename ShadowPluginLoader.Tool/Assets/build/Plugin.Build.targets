@@ -23,6 +23,20 @@
     </ItemGroup>
     <!-- Project Referer -->
 
+    <!-- Debug SourceGenerator -->
+    <PropertyGroup Condition="$(DebugSourceGenerator) == 'true'">
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <!-- 可选：自定义生成目录 -->
+        <CompilerGeneratedFilesOutputPath>GeneratedFiles</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
+    <ItemGroup Condition="$(DebugSourceGenerator) == 'true'">
+        <!-- 添加了内存里面的文件，不应该添加磁盘的，否则会报错 -->
+        <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+    </ItemGroup>
+    <Target Name="CheckGeneratedFiles" BeforeTargets="BeforeBuild"
+            Condition="$(DebugSourceGenerator) == 'true'">
+        <MakeDir Directories="$(ProjectDir)Generated" />
+    </Target>
 
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"

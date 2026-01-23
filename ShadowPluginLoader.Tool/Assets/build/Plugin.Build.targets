@@ -5,7 +5,7 @@
         <ExcludeFile Condition="$(ExcludeFile) == ''">$(ProjectDir)Plugin.Build.exclude</ExcludeFile>
         <ExcludeFile Condition="!Exists('$(ExcludeFile)')">$(MSBuildThisFileDirectory)Plugin.Build.exclude</ExcludeFile>
         <TargetFrameworkWithoutTrailingZero>$([System.String]::Copy('$(TargetFramework)').TrimEnd('.0'))</TargetFrameworkWithoutTrailingZero>
-	</PropertyGroup>
+    </PropertyGroup>
     <Import Project="$(ProjectDir)Plugin.Build.props" Condition="Exists('$(ProjectDir)Plugin.Build.props')"/>
     <Import Project="$(MSBuildThisFileDirectory)Plugin.Build.props" Condition="!Exists('$(ProjectDir)Plugin.Build.props')"/>
     <ItemGroup>
@@ -13,49 +13,65 @@
     </ItemGroup>
     <!-- nuget -->
     <ItemGroup>
-        <None Include="$(OutputPath)\$(PackageId)\**\*.*" Pack="true" PackagePath="lib\$(TargetFrameworkWithoutTrailingZero)\$(PackageId)" />
-        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="build\$(PackageId).props" />
-        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" />
-        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="build\$(PackageId).targets" />
-        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" />
-        <None Include="$(OutputPath)\$(PackageId)\**\*.xaml" Pack="true" PackagePath="contentTransitive/$(PackageId)" />
-        <None Include="$(OutputPath)\$(PackageId)\Assets\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)/Assets" />
+        <None Include="$(OutputPath)\$(PackageId)\**\*.*" Pack="true" PackagePath="lib\$(TargetFrameworkWithoutTrailingZero)\$(PackageId)"/>
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="build\$(PackageId).props"/>
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.props" Pack="true" PackagePath="buildTransitive\$(PackageId).props"/>
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="build\$(PackageId).targets"/>
+        <None Include="$(MSBuildThisFileDirectory)Plugin.BuildExtra.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets"/>
+        <None Include="$(OutputPath)\$(PackageId)\**\*.xaml" Pack="true" PackagePath="contentTransitive/$(PackageId)"/>
+        <None Include="$(OutputPath)\$(PackageId)\Assets\**\*.*" Pack="true" PackagePath="contentTransitive/$(PackageId)/Assets"/>
     </ItemGroup>
     <!-- Project Referer -->
 
-    
+
     <!-- Copy PluginMeta DefineFile To Plugin Dir -->
     <Target Name="CopyPluginDFiles" BeforeTargets="BeforeBuild"
             Condition="Exists('$(PluginDFile)') ">
-	    <!-- PluginDFile is from `Loaders.Build.props` -->
-	    <Copy SourceFiles="$(PluginDFile)"
-	          DestinationFiles="$(ProjectDir)plugin.d.json"
-	          OverwriteReadOnlyFiles="true"/>
-	    <Message Text="Copy $(PluginDFile) -> $(ProjectDir)plugin.d.json"
-	             Importance="high"/>
+        <!-- PluginDFile is from `Loaders.Build.props` -->
+        <Copy SourceFiles="$(PluginDFile)"
+              DestinationFiles="$(ProjectDir)plugin.d.json"
+              OverwriteReadOnlyFiles="true"/>
+        <Message Text="Copy $(PluginDFile) -> $(ProjectDir)plugin.d.json"
+                 Importance="high"/>
     </Target>
 
+    <!-- Copy PluginMeta DefineFile To Plugin Dir When ProjectReference-->
+    <Target Name="CopyPluginJson" AfterTargets="ResolveProjectReferences" Condition="!Exists('$(PluginDFile)')">
+        <ItemGroup>
+            <ProjectSdkRef Include="@(ProjectReference)"/>
+            <PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\**\plugin.d.json"/>
+            <PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\plugin.d.json"
+                             Condition="Exists('%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)plugin.d.json')"/>
+            <FirstPluginJsonFile Include="@(PluginJsonFiles)" Condition="'%(PluginJsonFiles.Identity)' == '@(PluginJsonFiles)'"/>
+        </ItemGroup>
+        <Copy Condition="@(FirstPluginJsonFile) != ''"
+                SourceFiles="@(FirstPluginJsonFile->'%(FullPath)')"
+                DestinationFolder="$(ProjectDir)"
+                SkipUnchangedFiles="true" />
+        <Message Text="Copy @(FirstPluginJsonFile->'%(FullPath)') -> $(ProjectDir)plugin.d.json"
+                 Importance="high" />
+    </Target>
 
     <ItemGroup>
-        <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json" Pack="true" PackagePath="contentTransitive\$(MSBuildProjectName)\" />
+        <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json" Pack="true" PackagePath="contentTransitive\$(MSBuildProjectName)\"/>
         <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json">
-		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		    <Link>$(MSBuildProjectName)\plugin.json</Link>
-	    </None>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Link>$(MSBuildProjectName)\plugin.json</Link>
+        </None>
     </ItemGroup>
 
-	<!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
-	<Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
-		<Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
+    <!-- Read Meta Data Then Convert To PluginJsonFile Before Build -->
+    <Target Name="ReadMetaData" BeforeTargets="PackagePlugin">
+        <Exec Command="dotnet $(ToolExeFile) 1 $(ProjectDir) $(MSBuildProjectFullPath) $(OutputFile)"
               ConsoleToMSBuild="True"/>
-	</Target> 
-	<!-- Package Plugin To PluginPackage Dir -->
+    </Target>
+    <!-- Package Plugin To PluginPackage Dir -->
     <Target Name="PackagePlugin" BeforeTargets="Build"
             Condition="$(AutoPluginPackage)">
         <Exec Command="dotnet $(ToolExeFile) 2 $(OutputDir) $(ExcludeFile) $(PluginPackagePath) $(PluginPackageName) $(PluginPackageExt) $(Configuration)"
               ConsoleToMSBuild="True"/>
         <Exec Condition="$(AppCertPath) != '' and $(PluginMisxPackage)"
               Command="powershell -file $(MSBuildThisFileDirectory)PackageMsix.ps1 $(PluginPackagePath) $(PluginPackageName).msix $(OutputDir) $(AppCertPath) $(AppCertPassword)"
-                ConsoleToMSBuild="True"/>
+              ConsoleToMSBuild="True"/>
     </Target>
 </Project>

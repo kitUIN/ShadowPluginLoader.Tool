@@ -49,22 +49,27 @@
                  Importance="high"/>
     </Target>
 
-    <!-- Copy PluginMeta DefineFile To Plugin Dir When ProjectReference-->
-    <Target Name="CopyPluginJson" AfterTargets="ResolveProjectReferences" Condition="!Exists('$(PluginDFile)')">
-        <ItemGroup>
-            <ProjectSdkRef Include="@(ProjectReference)"/>
-            <PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\**\plugin.d.json"/>
-            <PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\plugin.d.json"
+	<!-- Copy PluginMeta DefineFile To Plugin Dir When ProjectReference-->
+	<Target Name="CopyPluginJson" AfterTargets="ResolveProjectReferences" Condition="!Exists('$(PluginDFile)')">
+		<ItemGroup>
+			<ProjectSdkRef Include="@(ProjectReference)"/>
+			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\**\plugin.d.json"/>
+			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\plugin.d.json"
                              Condition="Exists('%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)plugin.d.json')"/>
-            <FirstPluginJsonFile Include="@(PluginJsonFiles)" Condition="'%(PluginJsonFiles.Identity)' == '@(PluginJsonFiles)'"/>
-        </ItemGroup>
-        <Copy Condition="@(FirstPluginJsonFile) != ''"
+		</ItemGroup>
+		<ItemGroup>
+			<ExistingPluginJsonFiles Include="@(PluginJsonFiles)" Condition="Exists('%(PluginJsonFiles.FullPath)')" />
+		</ItemGroup>
+		<ItemGroup>
+			<FirstPluginJsonFile Include="@(ExistingPluginJsonFiles->'%(FullPath)')" Condition="'%(ExistingPluginJsonFiles.Identity)' == '@(ExistingPluginJsonFiles)'"/>
+		</ItemGroup>
+		<Copy Condition="@(FirstPluginJsonFile) != ''"
                 SourceFiles="@(FirstPluginJsonFile->'%(FullPath)')"
                 DestinationFolder="$(ProjectDir)"
                 SkipUnchangedFiles="true" />
-        <Message Text="Copy @(FirstPluginJsonFile->'%(FullPath)') -> $(ProjectDir)plugin.d.json"
+		<Message Text="Copy @(FirstPluginJsonFile->'%(FullPath)') -> $(ProjectDir)plugin.d.json"
                  Importance="high" />
-    </Target>
+	</Target>
 
     <ItemGroup>
         <None Include="$(OutputDir)\$(MSBuildProjectName)\plugin.json" Pack="true" PackagePath="contentTransitive\$(MSBuildProjectName)\"/>

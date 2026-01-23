@@ -32,20 +32,25 @@ internal static class EntryPointLoad
         foreach (var entryPointType in entryPointTypes)
         {
             var entryPoint = entryPointType.GetCustomAttribute<EntryPointAttribute>();
-            if (entryPoint is null) continue;
-            if (entryPoint is MainPluginAttribute mainPluginAttribute)
+            switch (entryPoint)
             {
-                jsonObject["BuiltIn"] = mainPluginAttribute.BuiltIn;
+                case null:
+                    continue;
+                case MainPluginAttribute mainPluginAttribute:
+                    jsonObject["BuiltIn"] = mainPluginAttribute.BuiltIn;
+                    jsonObject["MainPlugin"] = entryPointType.FullName;
+                    continue;
+                default:
+                    entryPoints.Add(new JsonObject
+                    {
+                        ["Name"] = entryPoint.Name,
+                        ["Type"] = entryPointType.FullName
+                    });
+                    Logger.Log($"Inject {entryPointType.FullName} -> [{entryPoint.Name}]EntryPoints(plugin.json)");
+                    break;
             }
-            entryPoints.Add(new JsonObject
-            {
-                ["Name"] = entryPoint.Name,
-                ["Type"] = entryPointType.FullName
-            });
-            Logger.Log($"Inject {entryPointType.FullName} -> [{entryPoint.Name}]EntryPoints(plugin.json)");
         }
-
+        if (!jsonObject.ContainsKey("MainPlugin")) Logger.Error("Not Found MainPlugin In EntryPoints, Please Use [MainPlugin] On Your Plugin Main Class");
         jsonObject["EntryPoints"] = entryPoints;
-        
     }
 }

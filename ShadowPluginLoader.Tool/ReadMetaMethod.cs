@@ -154,7 +154,6 @@ internal static class ReadMetaMethod
 
         return json.ToString();
     }
-
     public static JsonObject CheckJsonRequired(string projectPath, XmlNode xmlDoc, string dllFilePath)
     {
         var pluginJsonValue = GetPluginJson(projectPath);

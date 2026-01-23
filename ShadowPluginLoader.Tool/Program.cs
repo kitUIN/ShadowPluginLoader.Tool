@@ -75,10 +75,11 @@ internal class Program
                     xmlDoc.Load(csprojPath);
                     var root = xmlDoc.DocumentElement;
                     if (root is null) break;
+                    var asm = Assembly.LoadFrom(dllFilePath);
                     var content = ReadMetaMethod.CheckJsonRequired(projectPath, root, dllFilePath);
                     var dllName = Path.GetFileNameWithoutExtension(dllFilePath);
                     var outPath = Path.Combine(Path.GetDirectoryName(dllFilePath)!, dllName, "plugin.json");
-                    EntryPointLoad.LoadEntryPoints(Assembly.LoadFrom(dllFilePath), content, outPath);
+                    EntryPointLoad.LoadEntryPoints(asm, content, outPath);
                     Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
                     var options = new JsonSerializerOptions
                     {

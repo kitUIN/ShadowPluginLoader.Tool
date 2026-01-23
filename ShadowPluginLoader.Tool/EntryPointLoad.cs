@@ -33,6 +33,10 @@ internal static class EntryPointLoad
         {
             var entryPoint = entryPointType.GetCustomAttribute<EntryPointAttribute>();
             if (entryPoint is null) continue;
+            if (entryPoint is MainPluginAttribute mainPluginAttribute)
+            {
+                jsonObject["BuiltIn"] = mainPluginAttribute.BuiltIn;
+            }
             entryPoints.Add(new JsonObject
             {
                 ["Name"] = entryPoint.Name,

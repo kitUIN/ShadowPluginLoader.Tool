@@ -53,8 +53,8 @@
 	<Target Name="CopyPluginJson" AfterTargets="ResolveProjectReferences" Condition="!Exists('$(PluginDFile)')">
 		<ItemGroup>
 			<ProjectSdkRef Include="@(ProjectReference)"/>
-			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\**\plugin.d.json"/>
-			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\$(Configuration)\plugin.d.json"
+			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\**\$(Configuration)\**\plugin.d.json"/>
+			<PluginJsonFiles Include="%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)bin\**\$(Configuration)\plugin.d.json"
                              Condition="Exists('%(ProjectSdkRef.RootDir)%(ProjectSdkRef.Directory)plugin.d.json')"/>
 		</ItemGroup>
 		<ItemGroup>
